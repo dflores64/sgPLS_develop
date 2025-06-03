@@ -12,13 +12,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
 The $Q^2$ is a assessment indicator for PLS models; for each new component $h$, a new matrix $Y^{(h)}$ is obtained by deflation and compared to the corresponding prediction matrix $\hat{Y}^{(h)}$. The Q2 therefore takes this comparison into account. To compute this figure, we must compute two more indicators : the $RSS$ and the $PRESS$.
 
-\[RSS_h = \sum_{i=1}^{n} \sum_{j=1}^{q} (Y^{(h)}_{i,j} - \hat{Y}_{i,j})^2 =  \sum_{i=1}^{n} \sum_{j=1}^{q} (Y^{(h+1)}_{i,j})^2\]
 
-\[PRESS_h = \sum_{i\in test}^{n} \sum_{j=1}^{q} (Y^{(h)}_{i,j} - \hat{Y}_{i,j})^2 =  \sum_{i\in test}^{n} \sum_{j=1}^{q} (Y^{(h+1)}_{i,j})^2\]
+$RSS_h = \sum_{i=1}^{n} \sum_{j=1}^{q} (Y^{(h)} - \hat{Y})^2 =  \sum_{i=1}^{n} \sum_{j=1}^{q} (Y^{(h+1)}_{i,j})^2$
+
+$PRESS_h = \sum_{i\in test}^{n} \sum_{j=1}^{q} (Y_{i,j}^{(h)} - \hat{Y_{i,j}})^2 =  \sum_{i\in test}^{n} \sum_{j=1}^{q} (Y^{(h+1)}_{i,j})^2$
 
 Then, $Q^2$ is defined by this formula :
 
-\[Q^2_h = 1 - \frac{PRESS_h}{RSS_{h-1}}\]
+$Q^2_h = 1 - \frac{PRESS_h}{RSS_{h-1}}$
 
 ## How to use Q² ?
 
@@ -92,9 +93,6 @@ q2.pls <- function(X,Y, mode = "regression", ncomp.max = 10){
       # Q2
       q2[h] <- 1-PRESS/RSS
       
-      print(head(Y.hat.rss))
-      print("régression")
-      
     }# end h loop
     
   }else if(mode == "canonical"){ # CASE OF CANONICAL MODE
@@ -144,8 +142,6 @@ q2.pls <- function(X,Y, mode = "regression", ncomp.max = 10){
       # Q2
       q2[h] <- 1-PRESS/RSS
       
-      #print(head(X.hat.rss))
-      
     }# end h loop
     
   }else{
@@ -183,11 +179,12 @@ The function below allow to create theses datasets.
 ```{r pressure, echo=FALSE}
 create.data <- function(n = 40, p = 10, q = 1){
   X <- matrix(data = rnorm(n*p),n,p)
-  U <- matrix(data = runif(q*p,0,10), nrow = p, ncol = q)
+  U <- matrix(data = runif(q*p,-10,10), nrow = p, ncol = q)
   Y <- X%*%U
   D <- data.frame(X,Y)
   return(list(X = X,Y = Y))
 }
 ```
 
+By default, the population is set to $n = 40$ which is close to actual conditions.
 Let's notice that the response $Y$ is a linear combination from the predictors $X$. Indeed, the function include a matrix product $Y = XU$ with $U$ the weight matrix. This condition is important in order to have a good performance of the model.
