@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## What is Q² indicator ?
 
-The $Q^2$ is a assessment indicator for PLS models; for each new component $h$, a new matrix $Y^{(h)}$ is obtained by deflation and compared to the corresponding prediction matrix $\hat{Y}^{(h)}$. The Q2 therefore takes this comparison into account. To compute this figure, we must compute two more indicators : the $RSS$ and the $PRESS$.
+The $Q^2$ is a assessment indicator for PLS models; for each new component $h$, a new matrix $Y^{(h)}$ is obtained by deflation and compared to the corresponding prediction matrix $\hat{Y}^{(h)}$. The Q2 therefore takes this comparison into account. A $Q^2$ value close to $1$ indicates a good performance. To compute this figure, we must compute two more indicators : the $RSS$ and the $PRESS$.
 
 
 $RSS_h = \sum_{i=1}^{n} \sum_{j=1}^{q} (Y^{(h)} - \hat{Y})^2 =  \sum_{i=1}^{n} \sum_{j=1}^{q} (Y^{(h+1)}_{i,j})^2$
@@ -188,3 +188,51 @@ create.data <- function(n = 40, p = 10, q = 1){
 
 By default, the population is set to $n = 40$ which is close to actual conditions.
 Let's notice that the response $Y$ is a linear combination from the predictors $X$. Indeed, the function include a matrix product $Y = XU$ with $U$ the weight matrix. This condition is important in order to have a good performance of the model.
+
+### First data set
+
+```{r}
+data <- create.data()
+X <- data$X
+Y <- data$Y
+
+print("X matrix")
+print("")
+print(head(X))
+print("")
+print("Y matrix")
+print("")
+print(head(Y))
+```
+
+This first dataset contains only one $Y$ variable. Now, let's compute q2 values.
+
+```{r}
+q2.pls(X,Y)
+```
+
+According to the graph, the $Q^2$ is rapidly close to $1$ from the second component. And even with the first component, it is greater than the limit. So here, one component may be enough.
+
+### Second data set
+
+```{r}
+data <- create.data(q = 5)
+X <- data$X
+Y <- data$Y
+
+print("X matrix")
+print("")
+print(head(X))
+print("")
+print("Y matrix")
+print("")
+print(head(Y))
+```
+
+This second dataset contains the five $Y$ variables announced previously. Now, let's compute q2 values. 
+
+```{r}
+q2.pls(X,Y)
+```
+
+According to the graph, the $Q^2$ is rapidly close to $1$ from the second component. And even with the first component, it is greater than the limit. So here, one component may be enough
