@@ -6,6 +6,7 @@ date: "2025-06-03"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(sgPLS)
 ```
 
 ## What is Q² indicator ?
@@ -56,7 +57,7 @@ q2.pls <- function(X,Y, mode = "regression", ncomp.max = 10){
     # RSS0 computing
     Y.mean <- t(matrix(colMeans(Y), nrow = q, ncol = n)) #mean for each column
     RSS0 <- sum(colSums((Y0-Y.mean)^2))
-    model.all <- PLS(X = X, Y = Y, ncomp = ncomp.max, mode = mode)
+    model.all <- sPLS(X = X, Y = Y, ncomp = ncomp.max, mode = mode)
     
   
     for(h in 1:ncomp.max){
@@ -68,11 +69,11 @@ q2.pls <- function(X,Y, mode = "regression", ncomp.max = 10){
         
         
         # training on the dataset without the ith individual
-        model <- PLS(X = X[-i,], Y = Y[-i,], ncomp = h, mode = "regression")
+        model <- sPLS(X = X[-i,], Y = Y[-i,], ncomp = h, mode = "regression")
         
         # predictions on the ith individual
-        Y.hat.rss[i,] <- predict.PLS(model.all, newdata = X[i,])$predict[,,max(h-1,1)]
-        Y.hat.press[i,] <- predict.PLS(model, newdata = X[i,])$predict[,,h]
+        Y.hat.rss[i,] <- predict.sPLS(model.all, newdata = X[i,])$predict[,,max(h-1,1)]
+        Y.hat.press[i,] <- predict.sPLS(model, newdata = X[i,])$predict[,,h]
         
         
         
@@ -100,7 +101,7 @@ q2.pls <- function(X,Y, mode = "regression", ncomp.max = 10){
     # RSS0 computing
     X.mean <- t(matrix(colMeans(X), nrow = p, ncol = n)) #mean for each column
     RSS0 <- sum(colSums((X0-X.mean)^2))
-    model.all <- PLS(X = X, Y = Y, ncomp = ncomp.max, mode = "canonical")
+    model.all <- sPLS(X = X, Y = Y, ncomp = ncomp.max, mode = "canonical")
     
     for(h in 1:ncomp.max){
       
@@ -111,7 +112,7 @@ q2.pls <- function(X,Y, mode = "regression", ncomp.max = 10){
         
         
         # training on the dataset without the ith individual
-        model <- PLS(X = X[-i,], Y = Y[-i,], ncomp = h, mode = "canonical")
+        model <- sPLS(X = X[-i,], Y = Y[-i,], ncomp = h, mode = "canonical")
         
         # predictions on the ith individual
         mat.t.all <- as.matrix(model.all$variates$X)
@@ -141,6 +142,7 @@ q2.pls <- function(X,Y, mode = "regression", ncomp.max = 10){
       
       # Q2
       q2[h] <- 1-PRESS/RSS
+
       
     }# end h loop
     
@@ -198,11 +200,8 @@ X <- data$X
 Y <- data$Y
 
 print("X matrix")
-print("")
 print(head(X))
-print("")
 print("Y matrix")
-print("")
 print(head(Y))
 ```
 
@@ -222,15 +221,12 @@ X <- data$X
 Y <- data$Y
 
 print("X matrix")
-print("")
 print(head(X))
-print("")
 print("Y matrix")
-print("")
 print(head(Y))
 ```
 
-This second dataset contains the five $Y$ variables announced previously. Now, let's compute q2 values. 
+This second dataset contains the five $Y$ variables as announced previously. Now, let's compute q2 values. 
 
 ```{r}
 q2.pls(X,Y)
