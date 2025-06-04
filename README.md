@@ -187,8 +187,8 @@ create.data <- function(n = 40, p = 10, q = 1){
 }
 ```
 
-By default, the population is set to $n = 40$ which is close to actual conditions.
-Let's notice that, on average, the response $Y$ is a linear combination from the predictors $X$. Indeed, the function include a matrix product $Y = XU + E$ with $U$ the weight matrix. This condition is important in order to have a good performance of the model. E matrix represents the gaussian noise.
+By default, the population is set to $n = 40$ which is close to actual conditions. In this case, we have $p < n$ ; a not very large value of $p$ avoids a long time of execution.
+Let's also notice that, on average, the response $Y$ is a linear combination from the predictors $X$. Indeed, the function include a matrix product $Y = XU + E$ with $U$ the weight matrix and $E$ matrix the gaussian noise. This linearity condition is important in order to have a good performance of the model, PLS method using linearity combinaison. 
 
 ### First data set
 
