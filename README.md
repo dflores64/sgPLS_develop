@@ -176,7 +176,9 @@ Let's give some simple examples : we will create and use two datasets:
 
 - the other is a dataset with five response variables $Y = (Y1,Y2,Y3,Y4,Y5)$.
 
-The function below allow to create theses datasets.
+- the last dataset contains real data about NIR spectra.
+
+The function below allow to create the first two datasets.
 
 ```{r pressure, echo=FALSE}
 create.data <- function(n = 40, p = 10, q = 1){
@@ -233,4 +235,48 @@ q2.pls(X,Y)
 ```
 
 According to the graph, the $Q^2$ is rapidly close to $1$ from the second component. And even with the first component, it is greater than the limit. So here, one component may be enough.
+
+
+
+### Second data set
+
+```{r}
+data <- create.data(q = 5)
+X <- data$X
+Y <- data$Y
+
+print("X matrix")
+print(head(X))
+print("Y matrix")
+print(head(Y))
+```
+
+This second dataset contains the five $Y$ variables announced previously. Now, let's compute q2 values. 
+
+```{r}
+q2.pls(X,Y)
+```
+
+According to the graph, the $Q^2$ is rapidly close to $1$ from the second component. And even with the first component, it is greater than the limit. So here, one component may be enough.
+
+
+### Third data set
+
+This real dataset deals with NIR spectra and density measurements of PET yarns. It contains $28$ rows ans $268$ $X$ variables for only $1$ $Y$ variable.
+
+```{r}
+library(pls)
+data(yarn)
+X <- yarn$NIR
+Y <- yarn$density
+
+print("Y matrix")
+print(head(Y))
+```
+
+This second dataset contains the five $Y$ variables announced previously. Now, let's compute q2 values. 
+
+```{r}
+q2.pls(X,Y)
+```
 
