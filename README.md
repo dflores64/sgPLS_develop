@@ -178,16 +178,17 @@ The function below allow to create theses datasets.
 
 ```{r pressure, echo=FALSE}
 create.data <- function(n = 40, p = 10, q = 1){
-  X <- matrix(data = rnorm(n*p),n,p)
+  X <- matrix(data = runif(n*p),n,p)
   U <- matrix(data = runif(q*p,-10,10), nrow = p, ncol = q)
-  Y <- X%*%U
+  E <- matrix(data = rnorm(n*p),n,p)
+  Y <- X%*%U + E
   D <- data.frame(X,Y)
   return(list(X = X,Y = Y))
 }
 ```
 
 By default, the population is set to $n = 40$ which is close to actual conditions.
-Let's notice that the response $Y$ is a linear combination from the predictors $X$. Indeed, the function include a matrix product $Y = XU$ with $U$ the weight matrix. This condition is important in order to have a good performance of the model.
+Let's notice that, on average, the response $Y$ is a linear combination from the predictors $X$. Indeed, the function include a matrix product $Y = XU + E$ with $U$ the weight matrix. This condition is important in order to have a good performance of the model. E matrix represents the gaussian noise.
 
 ### First data set
 
@@ -235,4 +236,5 @@ This second dataset contains the five $Y$ variables announced previously. Now, l
 q2.pls(X,Y)
 ```
 
-According to the graph, the $Q^2$ is rapidly close to $1$ from the second component. And even with the first component, it is greater than the limit. So here, one component may be enough
+According to the graph, the $Q^2$ is rapidly close to $1$ from the second component. And even with the first component, it is greater than the limit. So here, one component may be enough.
+
