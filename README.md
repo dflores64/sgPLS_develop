@@ -24,7 +24,7 @@ $Q^2_h = 1 - \frac{PRESS_h}{RSS_{h-1}}$
 
 ## How to use Q² ?
 
-We compare the value of this criterion to a certain limit $l$ ; this limit is conventionally equal to $1-0.95^2 = 0.0975$. As long as we have this inequality : $Q^2_h \geq l$, we keep on following iteration ; therefore we stop when we have this inequality : $Q^2_h < l$.
+We compare the value of this criterion to a certain limit $l$ ; this limit is conventionally equal to $1-0.95^2 = 0.0975$. As long as we have the inequality $Q^2_h \geq l$, we keep on following iteration ; therefore we stop when we have $Q^2_h < l$.
 
 ## Using Q² with R
 
@@ -170,7 +170,7 @@ q2.pls <- function(X,Y, mode = "regression", ncomp.max = 10){
 ```
 
 
-Let's give some simple examples : we will create and use two datasets:
+Let's give some simple examples : we will create and use three datasets:
 
 - one is a dataset with only one response variable $Y$.
 
@@ -192,7 +192,7 @@ create.data <- function(n = 40, p = 10, q = 1){
 ```
 
 By default, the population is set to $n = 40$ which is close to actual conditions. In this case, we have $p < n$ ; a not very large value of $p$ avoids a long time of execution.
-Let's also notice that, on average, the response $Y$ is a linear combination from the predictors $X$. Indeed, the function include a matrix product $Y = XU + E$ with $U$ the weight matrix and $E$ matrix the gaussian noise. This linearity condition is important in order to have a good performance of the model, PLS method using linearity combinaison. 
+Let's also notice that, on average, the response $Y$ is a linear combination from the predictors $X$. Indeed, the function includes a matrix product $Y = XU + E$ with $U$ the weight matrix and $E$ matrix the gaussian noise. This linearity condition is important in order to have a good performance of the model, the PLS method using linearity combinaison. 
 
 ### First data set
 
@@ -239,7 +239,7 @@ According to the graph, the $Q^2$ is rapidly close to $1$ from the second compon
 
 ### Third data set
 
-This real dataset deals with NIR spectra and density measurements of PET yarns. It contains $28$ rows ans $268$ $X$ variables for only $1$ $Y$ variable.
+This real dataset deals with NIR spectra and density measurements of PET yarns. It contains $n = 28$ rows and $p = 268$ $X$ variables for only $1$ $Y$ variable.
 
 ```{r}
 library(pls)
@@ -251,7 +251,7 @@ print("Y matrix")
 print(head(Y))
 ```
 
-This second dataset contains the five $Y$ variables announced previously. Now, let's compute q2 values. 
+This second dataset contains the five $Y$ variables as announced previously. Now, let's compute the q2 values. 
 
 ```{r}
 q2.pls(X,Y)
