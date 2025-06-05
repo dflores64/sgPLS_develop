@@ -228,29 +228,6 @@ print("Y matrix")
 print(head(Y))
 ```
 
-This second dataset contains the five $Y$ variables as announced previously. Now, let's compute q2 values. 
-
-```{r}
-q2.pls(X,Y)
-```
-
-According to the graph, the $Q^2$ is rapidly close to $1$ from the second component. And even with the first component, it is greater than the limit. So here, one component may be enough.
-
-
-
-### Second data set
-
-```{r}
-data <- create.data(q = 5)
-X <- data$X
-Y <- data$Y
-
-print("X matrix")
-print(head(X))
-print("Y matrix")
-print(head(Y))
-```
-
 This second dataset contains the five $Y$ variables announced previously. Now, let's compute q2 values. 
 
 ```{r}
