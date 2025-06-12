@@ -1,5 +1,4 @@
 import(mixOmics)
-import(sgPLS)
 
 export(sgPLS,gPLS,sPLS,PLS,per.variance,plotcim,select.sgpls,select.spls,normv,
 soft.thresholding,soft.thresholding.group,soft.thresholding.sparse.group,lambda.quadra,
