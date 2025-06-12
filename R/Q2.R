@@ -115,13 +115,8 @@ create.data <- function(n = 50, p = 10, q = 3){
   list(X=X,Y=Y)
 }
 
-jeu <- create.data()
-X <- jeu[[1]]
-Y <- jeu[[2]]
 
-jeu.test <- create.data(n = 20)
-X.test <- jeu[[1]]
-Y.test <- jeu[[2]]
+
 
 # necessaries functions for the PLS function -----------------------------
 

@@ -195,42 +195,6 @@ predict.PLS <- function(object, newdata,  ...)
 }
 
 
-# TEST ----
-
-# data simulation
-
-train <- 1:40
-test <- 41:50
-
-jeu <- create.data(n=50)
-
-X <- jeu$X[train,]
-Y <- jeu$Y[train,]
-X.test <- jeu$X[test,]
-Y.test <- jeu$Y[test,]
-
-result.pls <- PLS(X = X, Y = Y, ncomp = 10, mode = "regression")
-Y.chap <- predict.PLS(result.pls, newdata = X.test)
-
-head(Y.test)
-head(Y.chap$predict)
-sum((Y.test - Y.chap$predict[,,10])^2)
-
-## data yarn
-
-library(pls)
-data(yarn)
-
-train <- sample(x = 1:28, size = 20)
-X <- yarn$NIR[train,]
-Y <- yarn$density[train]
-X.test <- yarn$NIR[-train,]
-Y.test <- yarn$density[-train]
-
-result.pls3 <- PLS(X = X, Y = Y, ncomp = 19, mode = "regression")
-Y.chap3 <- predict.PLS(result.pls3, newdata = X.test)
-head(Y.chap3$predict)
-head(Y.test)
 
 # PLSda function ------------------------------------------
 
@@ -408,66 +372,6 @@ predict.PLSda <-
                           centroids = G, method = method, class = cls)))
   }
 
-
-# TEST PLSda function --------------------------------------
-
-## 2classes --------
-library(sgPLS)
-library(mvtnorm)
-rAD2 <- function(n, prob, mu1, mu2, Sigma1, Sigma2) {
-  y <- numeric(n)
-  x <- matrix(NA, nrow = n, ncol = length(mu1))
-  for (i in seq_len(n)) {
-    y[i] <- rbinom(1, size = 1, prob = 1 - prob) + 1 
-    x[i,] <- if (y[i] == 1) rmvnorm(1, mean = mu1, sigma = Sigma1) else
-      rmvnorm(1, mean = mu2, sigma = Sigma2)
-  }
-  data.frame(x, y)
-}
-
-prob <- 0.6
-mu1 <- c(1, 1)
-mu2 <- c(-1, -1)
-Sigma1 <- matrix(c(2, 0, 0, 2), nrow = 2, ncol = 2)
-Sigma2 <- matrix(c(0.5, 0, 0, 0.5), nrow = 2, ncol = 2)
-
-train_12 <- rAD2(n = 80, prob = prob, mu1 = mu1, mu2 = mu2,
-                 Sigma1 = Sigma1, Sigma2 = Sigma2)
-test_12 <- rAD2(n = 20, prob = prob, mu1 = mu1, mu2 = mu2,
-                Sigma1 = Sigma1, Sigma2 = Sigma2)
-
-modele <- sPLSda(X = train_12[,1:2],Y = train_12$y, ncomp = 2)
-pred <- predict.PLSda(modele, newdata = test_12[,1:2])$class$max.dist
-table(pred[,2],test_12$y)
-
-## 3 classes ------------
-
-rAD3 <- function(n,mu1, mu2, mu3, Sigma1, Sigma2, Sigma3) {
-  y <- numeric(n)
-  x <- matrix(NA, nrow = n, ncol = length(mu1))
-  for (i in seq_len(n)) {
-    y[i] <- sample(seq(3),1) # tirage aléatoire uniforme de la classe
-    x[i,] <- if (y[i] == 1) rmvnorm(1, mean = mu1, sigma = Sigma1) else if (y[i] == 2)
-      rmvnorm(1, mean = mu2, sigma = Sigma2) else
-        rmvnorm(1, mean = mu3, sigma = Sigma3)
-  }
-  data.frame(x, y)
-}
-
-mu1 <- c(1, 1)
-mu2 <- c(-1, -1)
-mu3 <- c(0,0)
-Sigma1 <- matrix(c(2, 0, 0, 2), nrow = 2, ncol = 2)
-Sigma2 <- matrix(c(0.5, 0, 0, 0.5), nrow = 2, ncol = 2)
-Sigma3 <- matrix(c(1, 0, 0, 1), nrow = 2, ncol = 2)
-
-train_123 <- rAD3(n = 80, mu1 = mu1, mu2 = mu2, mu3 = mu3,
-                  Sigma1 = Sigma1, Sigma2 = Sigma2, Sigma3 = Sigma3)
-test_123 <- rAD3(n = 20, mu1 = mu1, mu2 = mu2, mu3 = mu3,
-                 Sigma1 = Sigma1, Sigma2 = Sigma2, Sigma3 = Sigma3)
-
-modele <- PLSda(X = train_123[,1:2],Y = train_123$y, ncomp = 6)
-pred <- predict.PLSda(modele, newdata = test_123[,1:2])$class$max.dist
 
 
 # PLSda performance ------------------------------------
