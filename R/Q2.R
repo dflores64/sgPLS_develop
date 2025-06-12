@@ -81,33 +81,6 @@ predict.PLS <- predict.sPLS <- predict.gPLS <- predict.sgPLS <- function(object,
 
 # function creating dataset ------------------------------------
 
-rmod <- function(n, min = -3, max = 2) {
-  x <- runif(n, min = min, max = max)
-  f <- function(x) -0.2*x^5 + x^3 - x^2 + 3*x + 1
-  eps <- rnorm(n, sd = 1)
-  y <- f(x) + eps
-  data.frame(x = x, y = y)
-}
-
-
-rRegLin <- function(q, n = 50,p = 45){
-  x <- matrix(data = rnorm(n*p),n,p)
-  y <- 1 + rowSums(x[,1:q]) + rnorm(n)
-  d <- data.frame(x,y)
-  list(x,y)
-}
-
-rRegLin2 <- function(q, n = 50,p = 45){
-  x <- matrix(data = rnorm(n*p),n,p)
-  y1 <- 1 + rowSums(x[,1:q]) + rnorm(n)
-  y2 <- 1 + 5*x[,1] + -10*x[,2] + 2*x[,q] + rnorm(n)
-  y3 <- 1 + -2*x[,1] + 8*x[,2] + 7*x[,q] + rnorm(n)
-  y4 <- 1 + 4*x[,2] - 12*x[,q] + rnorm(n)
-  y <- cbind(y1,y2,y3,y4)
-  d <- data.frame(x,y)
-  list(x,y)
-}
-
 create.data <- function(n = 50, p = 10, q = 3){
   X <- matrix(data = rnorm(n*p),n,p)
   U <- matrix(data = runif(q*p,0,10), nrow = p, ncol = q)
