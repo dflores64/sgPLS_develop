@@ -79,18 +79,6 @@ predict.PLS <- predict.sPLS <- predict.gPLS <- predict.sgPLS <- function(object,
 
 
 
-# function creating dataset ------------------------------------
-
-create.data <- function(n = 50, p = 10, q = 3){
-  X <- matrix(data = rnorm(n*p),n,p)
-  U <- matrix(data = runif(q*p,0,10), nrow = p, ncol = q)
-  Y <- X%*%U
-  list(X=X,Y=Y)
-}
-
-
-
-
 # necessaries functions for the PLS function -----------------------------
 
 # Fonction norme / norm function
