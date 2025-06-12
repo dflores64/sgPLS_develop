@@ -572,31 +572,4 @@ q2.pls.ter <- function(X,Y, mode = "regression", ncomp.max = 10){
   
 }
 
-# test q2 -------------------------
-jeu <- create.data(n=50)
 
-X <- jeu$X
-Y <- jeu$Y
-
-q2.pls(X,Y)
-q2.pls.ter(X,Y)
-q2.pls(X,Y,mode = "canonical")
-q2.pls.bis(X,Y,mode = "canonical")
-q2.pls.ter(X,Y,mode = "canonical")
-
-
-# PROPOSITION chatgpt -------------------------
-
-set.seed(123)
-
-# Dimensions
-n <- 100  # individus
-p <- 10   # variables X
-q <- 5    # variables Y
-
-# Génère X : variables indépendantes standardisées
-X <- scale(matrix(rnorm(n * p), n, p))
-
-# Génère Y : dépend linéairement de X + un peu de bruit
-beta <- matrix(runif(p * q, -1, 1), p, q)
-Y <- scale(X %*% beta + matrix(rnorm(n * q, sd = 0.3), n, q))
