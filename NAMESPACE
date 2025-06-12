@@ -27,4 +27,4 @@ S3method(perf, sgPLS)
 
 S3method(perf, sPLSda)
 S3method(perf, gPLSda)
-S3method(perf, sgPLSda)v
+S3method(perf, sgPLSda)
