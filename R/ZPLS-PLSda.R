@@ -202,10 +202,7 @@ PLSda <- function(X,Y,ncomp = 2,
                   keepX = rep(ncol(X), ncomp),
                   max.iter = 500,		 
                   tol = 1e-06){
-  return(sPLSda(X,Y,ncomp = ncomp, 
-                keepX = keepX,
-                max.iter = max.iter,		 
-                tol = tol))
+  return()
 }
 
 predict.PLSda <- 
