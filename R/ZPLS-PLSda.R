@@ -407,26 +407,3 @@ perf.PLSda.bis <- function(X,Y,X.test,Y.test){
   barplot(erreur, col  ="blue", pch = 16, width = c(0.2,0.2), main = "Error rate of the model", xlab = "number of components", ylab = "Error")
   return(setNames(list(pred, erreur, matconf),c("predictions","erreur","confusion")))
 }
-
-perf.PLSda.bis(X = train_12[,1:2],Y = train_12$y, X.test = test_12[,1:2],Y.test = test_12$y)
-perf.PLSda.bis(X = train_123[,1:2],Y = train_123$y, X.test = test_123[,1:2],Y.test = test_123$y)
-
-# Avec MixOmics -----------------------------------------------------------
-
-library(mixOmics) # import the mixOmics library
-data(srbct) # extract the small round bull cell tumour data
-X <- srbct$gene # use the gene expression data as the X matrix
-Y <- srbct$class # use the class data as the Y matrix
-
-result.plsda.srbct <- plsda(X, Y) # run the method
-plotIndiv(result.plsda.srbct) # plot the samples
-plotVar(result.plsda.srbct) # plot the variables
-
-splsda.result <- splsda(X, Y, keepX = c(50,30)) # run the method
-plotIndiv(splsda.result) # plot the samples
-plotVar(splsda.result) # plot the variables
-
-# extract the variables used to construct the first latent component
-selectVar(splsda.result, comp = 1)$name 
-# depict weight assigned to each of these variables
-plotLoadings(splsda.result, method = 'mean', contrib = 'max')  
