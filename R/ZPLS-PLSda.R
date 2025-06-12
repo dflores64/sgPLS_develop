@@ -390,9 +390,6 @@ perf.PLSda <- function(X,Y,X.test,Y.test){
   return(setNames(list(pred, erreur, matconf,h.best),c("predictions","erreur","confusion","h.best")))
 }
 
-perf.PLSda(X = train_12[,1:2],Y = train_12$y, X.test = test_12[,1:2],Y.test = test_12$y)
-perf.PLSda(X = train_123[,1:2],Y = train_123$y, X.test = test_123[,1:2],Y.test = test_123$y)
-
 ## second function ---------------------
 perf.PLSda.bis <- function(X,Y,X.test,Y.test){
   modele <- PLSda(X = X,Y = Y)
