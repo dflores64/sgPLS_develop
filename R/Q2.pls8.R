@@ -1,6 +1,6 @@
 q2.pls8 <- function(object, mode = "regression", ncomp.max = object$ncomp){
   
-  # object attributes recovery (1)
+  # object attributes recovery
   X <- scale(object$X0)
   Y <- scale(object$Y0)
   c <- object$mat.c
@@ -11,25 +11,19 @@ q2.pls8 <- function(object, mode = "regression", ncomp.max = object$ncomp){
   if(nrow(X)!=nrow(Y)){ stop("X and Y have not the same number of rows.")}
   n <- nrow(X)
   
-  #  variables definition (2)
+  #  variables definition 
   q2 <- numeric(ncomp.max)
   PRESS <- numeric(ncomp.max)
   RSS <- numeric(ncomp.max)
   Y.test <- Y
   
-  if(mode == "regression"){ 
+  if(mode == "regression"){ # CASE OF REGRESSION MODE 
     
     # RSS0 computing
     Y.mean <- t(matrix(colMeans(Y), nrow = q, ncol = n)) #mean for each column
     RSS0 <- sum(colSums((Y-Y.mean)^2))
     
-    # prediction computing for press1
-    Y.hat.press1 <- matrix(nrow = n, ncol = q) # prediction matrix for PRESS1
-    
-    # h-dependant variables definition (4)
-    Y.hat.rss <- matrix(nrow = n, ncol = q) # prediction matrix for RSS
-    
-    for(h in 1:ncomp.max){ # (3)
+    for(h in 1:ncomp.max){ # 
       
       Y.test <- Y  
       
@@ -42,7 +36,7 @@ q2.pls8 <- function(object, mode = "regression", ncomp.max = object$ncomp){
         
       }
       
-      # deflation matrices for RSS(9)
+      # deflation matrices for RSS
       u <- object$loadings$X[,h]
       v <- object$loadings$Y[,h]
       res.deflat <- step2.spls(X=X,Y=Y,u,v,mode="regression")
@@ -50,13 +44,13 @@ q2.pls8 <- function(object, mode = "regression", ncomp.max = object$ncomp){
       Y = res.deflat$Y.h
       
       
-      # RSS computing (10)
+      # RSS computing 
       RSS[h] <- mean(colSums((Y)^2)) # why not the sum ?
       
-      # PRESSh computing (11)
+      # PRESSh computing
       PRESS[h] <- mean(colSums((Y.test)^2)) # why not the sum ?
       
-      # Q2 (12)
+      # Q2 
       q2[h] <- 1-PRESS[h]/RSS[max(h-1,1)]
       
     }# end h loop
@@ -65,6 +59,49 @@ q2.pls8 <- function(object, mode = "regression", ncomp.max = object$ncomp){
     q2[1] <- 1-PRESS[1]/RSS0
     
   }else if(mode == "canonical"){ # CASE OF CANONICAL MODE 
+    
+    # RSS0 computing
+    X.mean <- t(matrix(colMeans(X), nrow = p, ncol = n)) #mean for each column
+    
+    RSS0 <- sum(colSums((X-X.mean)^2))
+    
+    for(h in 1:ncomp.max){ # (3)
+      
+      X.test <- X  
+      
+      for(i in 1:n){
+        
+        model <- PLS(X = X[-i,], Y = Y[-i,], ncomp = h, mode = "regression")
+        a <- model$loadings$X[, 1, drop = FALSE]
+        c <- model$mat.c[, 1, drop = FALSE]
+        X.test[i, ] <- X.test[i, ] - X[i, , drop = FALSE] %*% a %*% t(c)
+        
+      }
+      
+      # deflation matrices for RSS
+      u <- object$loadings$X[,h]
+      v <- object$loadings$Y[,h]
+      res.deflat <- step2.spls(X=X,Y=Y,u,v,mode="regression")
+      X = res.deflat$X.h
+      Y = res.deflat$Y.h
+      
+      
+      # RSS computing 
+      RSS[h] <- mean(colSums((X)^2)) # why not the sum ?
+      
+      # PRESSh computing
+      PRESS[h] <- mean(colSums((X.test)^2)) # why not the sum ?
+      
+      # Q2 
+      q2[h] <- 1-PRESS[h]/RSS[max(h-1,1)]
+      
+      print(head(Y))
+      
+    }# end h loop
+    
+    # first value correction 
+    q2[1] <- 1-PRESS[1]/RSS0
+    
   }else{
     stop("The mode must be either regression or canonical.")
   }# end if loop
