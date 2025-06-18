@@ -1,8 +1,8 @@
 q2.pls8 <- function(object, mode = "regression", ncomp.max = object$ncomp){
   
   # object attributes recovery
-  X <- scale(object$X0)
-  Y <- scale(object$Y0)
+  X <- scale(object$X)
+  Y <- scale(object$Y)
   c <- object$mat.c
   d <- object$mat.d
   p <- ncol(X)
@@ -94,8 +94,6 @@ q2.pls8 <- function(object, mode = "regression", ncomp.max = object$ncomp){
       
       # Q2 
       q2[h] <- 1-PRESS[h]/RSS[max(h-1,1)]
-      
-      print(head(Y))
       
     }# end h loop
     
