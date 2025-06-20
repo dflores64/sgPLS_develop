@@ -75,7 +75,3 @@ PLS <- function(X,Y,ncomp,mode){
   return(invisible(result))
 
 }
-
-
-
-
