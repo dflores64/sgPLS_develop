@@ -1,31 +1,41 @@
-## first function ---------------
-perf.PLSda <- function(X,Y,X.test,Y.test){
-  modele <- PLSda(X = X,Y = Y)
-  pred <- predict.PLSda(modele, newdata = X.test)$class$max.dist
+perf.PLSda <- function(object, ncomp = object$ncomp, method = "max.dist"){
   
-  erreur <- numeric(2)
+  X <- object$X
+  Y <- map(object$Y)
+  n <- nrow(X)
+  p <- ncol(X)
+  
+  if(method == "max.dist"){k=1}else if(method == "centroids.dist"){k=2}else{k=3}
+  
+  # prediction analysis
+  err <- matrix(NA, nrow = n, ncol = ncomp)
+  
   matconf <- list()
-  matconf[[1]] <- table(pred[,1],Y.test)
-  matconf[[2]] <- table(pred[,2],Y.test)
-  erreur[1] <- 1 - sum(diag(matconf[[1]])) / sum(matconf[[1]])
-  erreur[2] <- 1 - sum(diag(matconf[[2]])) / sum(matconf[[2]])
-  h.best <- min(which.min(erreur))
   
-  plot(erreur, col="blue", pch = 16, type = "b", main = "Error rate of the model", xlab = "number of components", ylab = "Error")
-  return(setNames(list(pred, erreur, matconf,h.best),c("predictions","erreur","confusion","h.best")))
+  for(h in 1:ncomp){
+    
+    print(h)
+    
+    for(i in 1:n){
+      
+      X.train <- X[-i,]
+      Y.train <- Y[-i]
+      X.test <- X[i,]
+      Y.test <- Y[i]
+      
+      # model created
+      modele <- PLSda(X = X.train,Y = Y.train, ncomp = ncomp)
+      pred <- predict.PLSda(modele, newdata = X.test, methode = methode)$class[[k]]
+      equal <- Y.test == pred[,h]
+      err[i,h] <- 1-equal
+      
+    }
+  }
+  
+  err.moy <- colMeans(err)
+  h.best <- min(which.min(err.moy))
+  plot(err.moy, col="blue", pch = 16, type = "b", main = "Error rate of the model", xlab = "number of components", ylab = "Error")
+  
+  return(setNames(list(err.moy,h.best),c("error","h.best")))
 }
 
-## second function ---------------------
-perf.PLSda.bis <- function(X,Y,X.test,Y.test){
-  modele <- PLSda(X = X,Y = Y)
-  pred <- predict.PLSda(modele, newdata = X.test)$class$max.dist
-  
-  erreur <- numeric(2)
-  matconf <- list()
-  matconf[[1]] <- table(pred[,1],Y.test)
-  matconf[[2]] <- table(pred[,2],Y.test)
-  erreur[1] <- 1 - sum(diag(matconf[[1]])) / sum(matconf[[1]])
-  erreur[2] <- 1 - sum(diag(matconf[[2]])) / sum(matconf[[2]])
-  barplot(erreur, col  ="blue", pch = 16, width = c(0.2,0.2), main = "Error rate of the model", xlab = "number of components", ylab = "Error")
-  return(setNames(list(pred, erreur, matconf),c("predictions","erreur","confusion")))
-}
