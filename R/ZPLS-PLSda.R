@@ -68,7 +68,8 @@ PLS <- function(X,Y,ncomp,mode){
     load.u <- matrix(load.u,ncol=1)
     load.v <- matrix(load.v,ncol=1)
   }
-  
+  colnames(load.u) <- NULL
+  colnames(load.v) <- NULL  
   cl = match.call()
   result <- list(X0 = X, Y0 = Y, X = X.s, Y = Y.s, ncomp = ncomp, loadings = list(X = load.u, Y = load.v),variates = list(X = mat.t, Y = mat.u), mat.c = mat.c,mat.d=mat.d,mat.e=mat.e)
   class(result) = c("sPLS", "spls","pls")
