@@ -13,9 +13,7 @@ perf.PLSda <- function(object, ncomp = object$ncomp, method = "max.dist"){
   matconf <- list()
   
   for(h in 1:ncomp){
-    
-    print(h)
-    
+
     for(i in 1:n){
       
       X.train <- X[-i,]
