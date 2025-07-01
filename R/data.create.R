@@ -13,7 +13,7 @@ data.cl.create <- function(n = 40, p = 10, classes = 2){
   Y <- numeric(n)
   for(i in seq_len(n)){
     Y[i] <- sample(x = seq_len(classes), size = 1)
-    X[i,] <- runif(p) + Y[i]
+    X[i,] <- runif(p) + Y[i] + rnorm(p)
   }
   D <- data.frame(X,Y)
   colnames(X) <- paste0(rep("X",p),1:p)
