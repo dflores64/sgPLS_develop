@@ -4,7 +4,8 @@ CV <- function(X,Y,K,mode = "regression",ncomp){
   p <- ncol(X)
   q <- ncol(Y)
   
-  if(K > n) stop("K mustn't exceed n")
+  if(K > n) stop("K mustn't exceed n = nrow(X)")
+  if(ncomp > p) stop("ncomp mustn't exceed p = ncol(X)")
   
   err <- 0
   b <- floor(n/K) # block size
@@ -29,8 +30,8 @@ CV <- function(X,Y,K,mode = "regression",ncomp){
       X.test <- X[ind.test,]
       Y.test <- Y[ind.test,]
       
-      modele <- PLS(X = X.train,Y = Y.train, ncomp = ncomp, mode = "regression")
-      pred <- predict.PLS(modele, newdata = X.test)$predict[,,1]
+      modele <- PLS(X = X.train, Y = Y.train, ncomp = ncomp, mode = "regression")
+      pred <- predict.PLS(modele, newdata = X.test)$predict[,,ncomp]
       
       err <- err + sum(colSums(as.matrix((Y.test - pred)^2)))
       
@@ -48,13 +49,11 @@ CV <- function(X,Y,K,mode = "regression",ncomp){
       Y.test <- Y[ind.test]
       
       modele <- PLSda(X = X.train,Y = Y.train, ncomp = ncomp)
-      pred <- predict.PLSda(modele, newdata = X.test)$class[[1]][, 1]
+      pred <- predict.PLSda(modele, newdata = X.test)$class[[1]][, ncomp]
       equal <- Y.test == pred
       err <- err + sum(1-equal)
       
     }
-
   }else{stop("mode must be either 'regression' or 'classif'")}
   return(err/K/b)
-
 }
