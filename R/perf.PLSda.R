@@ -11,26 +11,26 @@ perf.PLS <- function(object, K=nrow(object$X), ncomp = object$ncomp){
   
   b <- floor(n/K) # block size
   ind <- sample(n)
-  
-  for(h in 1:ncomp){
+
+  for(k in seq_len(K)){
     
-    for(k in seq_len(K)){
+    # bloc definition
+    ind.beg <- (k-1) * b + 1 # block k beginning
+    ind.end <- k * b # block k end
+    ind.test <- ind[ind.beg:ind.end]
+    nk <- length(ind.test)
+    X.train <- X[-ind.test,]
+    Y.train <- Y[-ind.test]
+    X.test <- X[ind.test,]
+    Y.test <- Y[ind.test]
+    modele <- PLS(X = X.train, Y = Y.train, ncomp = ncomp, mode = "regression")  
+    
+    for(h in 1:ncomp){  
       
-      # bloc definition
-      ind.beg <- (k-1) * b + 1 # block k beginning
-      ind.end <- k * b # block k end
-      ind.test <- ind[ind.beg:ind.end]
-      nk <- length(ind.test)
-      X.train <- X[-ind.test,]
-      Y.train <- Y[-ind.test]
-      X.test <- X[ind.test,]
-      Y.test <- Y[ind.test]
-      
-      # model created
-      modele <- PLS(X = X.train, Y = Y.train, ncomp = ncomp, mode = "regression")
+      # predictions
       pred <- predict.PLS(modele, newdata = X.test)$predict[,,h]
       err[k,h] <- sum(colSums(as.matrix((Y.test - pred)^2)))
-
+      
     }
   }
   
@@ -43,7 +43,7 @@ perf.PLS <- function(object, K=nrow(object$X), ncomp = object$ncomp){
 }
 
 # performance assessment for PLSda
-perf.PLSda <- function(object, K=nrow(object$X), ncomp = object$ncomp, method = "max.dist"){
+perf.PLSda <- function(object, ncomp = object$ncomp, method = "max.dist"){
   
   X <- object$X
   Y <- map(object$Y)
@@ -54,34 +54,33 @@ perf.PLSda <- function(object, K=nrow(object$X), ncomp = object$ncomp, method = 
   
   # prediction analysis
   err <- matrix(NA, nrow = K, ncol = ncomp)
-
+  
   b <- floor(n/K) # block size
   ind <- sample(n)
   
-  for(h in 1:ncomp){
-
-    for(k in seq_len(K)){
+  for(k in seq_len(K)){
       
-      # bloc definition
-      ind.beg <- (k-1) * b + 1 # block k beginning
-      ind.end <- k * b # block k end
-      ind.test <- ind[ind.beg:ind.end]
-      X.train <- X[-ind.test,]
-      Y.train <- Y[-ind.test]
-      X.test <- X[ind.test,]
-      Y.test <- Y[ind.test]
+    # bloc definition
+    ind.beg <- (k-1) * b + 1 # block k beginning
+    ind.end <- k * b # block k end
+    ind.test <- ind[ind.beg:ind.end]
+    X.train <- X[-ind.test,]
+    Y.train <- Y[-ind.test]
+    X.test <- X[ind.test,]
+    Y.test <- Y[ind.test]
       
+    for(h in 1:ncomp)
       # model created
       modele <- PLSda(X = X.train,Y = Y.train, ncomp = h)
       pred <- predict.PLSda(modele, newdata = X.test, methode = methode)$class[[dist]]
       equal <- Y.test == pred[,h]
       err[k,h] <- sum(1-equal)
- 
+      
     }
   }
   
   err.moy <- colSums(err)/b/K
-
+  
   h.best <- min(which.min(err.moy))
   plot(err.moy, col="blue", pch = 16, type = "b", main = "Error rate of the model", xlab = "number of components", ylab = "Error")
   
