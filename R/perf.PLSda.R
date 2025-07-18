@@ -24,12 +24,12 @@ perf.PLS <- function(object, K=nrow(object$X), ncomp = object$ncomp){
     X.test <- X[ind.test,]
     Y.test <- Y[ind.test]
     modele <- PLS(X = X.train, Y = Y.train, ncomp = ncomp, mode = "regression")  
-    
+    pred <- predict.PLS(modele, newdata = X.test)
     for(h in 1:ncomp){  
       
       # predictions
-      pred <- predict.PLS(modele, newdata = X.test)$predict[,,h]
-      err[k,h] <- sum(colSums(as.matrix((Y.test - pred)^2)))
+      
+      err[k,h] <- sum(colSums(as.matrix((Y.test - pred$predict[,,h])^2)))
       
     }
   }
