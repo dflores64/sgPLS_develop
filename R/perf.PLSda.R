@@ -69,7 +69,7 @@ perf.PLSda <- function(object, ncomp = object$ncomp, method = "max.dist"){
     X.test <- X[ind.test,]
     Y.test <- Y[ind.test]
       
-    for(h in 1:ncomp)
+    for(h in 1:ncomp){
       # model created
       modele <- PLSda(X = X.train,Y = Y.train, ncomp = h)
       pred <- predict.PLSda(modele, newdata = X.test, methode = methode)$class[[dist]]
