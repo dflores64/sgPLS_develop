@@ -24,12 +24,12 @@ perf.PLS <- function(object, K=nrow(object$X), ncomp = object$ncomp){
     X.test <- X[ind.test,]
     Y.test <- Y[ind.test]
     modele <- PLS(X = X.train, Y = Y.train, ncomp = ncomp, mode = "regression")  
-    pred <- predict.PLS(modele, newdata = X.test)
+    
     for(h in 1:ncomp){  
       
       # predictions
-      
-      err[k,h] <- sum(colSums(as.matrix((Y.test - pred$predict[,,h])^2)))
+      pred <- predict.PLS(modele, newdata = X.test)$predict[,,h]
+      err[k,h] <- sum(colSums(as.matrix((Y.test - pred)^2)))
       
     }
   }
@@ -37,10 +37,11 @@ perf.PLS <- function(object, K=nrow(object$X), ncomp = object$ncomp){
   err.moy <- colSums(err)/b/K
   
   h.best <- min(which.min(err.moy))
-  plot(err.moy, col="blue", pch = 16, type = "b", main = "Error rate of the model", xlab = "number of components", ylab = "Error")
+  plot(err.moy, col="blue", pch = 16, type = "b", main = "MSEP of the model", xlab = "number of components", ylab = "MSEP")
   
-  return(setNames(list(err.moy,h.best),c("error","h.best")))
+  return(setNames(list(err.moy,h.best),c("MSEP","h.best")))
 }
+
 
 # performance assessment for PLSda
 perf.PLSda <- function(object, ncomp = object$ncomp, method = "max.dist"){
