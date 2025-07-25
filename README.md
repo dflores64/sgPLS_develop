@@ -11,7 +11,7 @@ library(sgPLS)
 
 ## What is Q² indicator ?
 
-The $Q^2$ is a assessment indicator for PLS models; for each new component $h$, a new matrix $Y^{(h)}$ is obtained by deflation and compared to the corresponding prediction matrix $\hat{Y}^{(h)}$. The Q2 therefore takes this comparison into account. A $Q^2$ value close to $1$ indicates a good performance. To compute this figure, we must compute two more indicators : the $RSS$ and the $PRESS$.
+The $Q^2$ is an assessment indicator for PLS models; for each new component $h$, a new matrix $Y^{(h)}$ is obtained by deflation and compared to the corresponding prediction matrix $\hat{Y}^{(h)}$. The Q2 therefore takes this comparison into account. A $Q^2$ value close to $1$ indicates a good performance. To compute this figure, we must compute two more indicators : the $RSS$ and the $PRESS$.
 
 
 $RSS_h = \sum_{i=1}^{n} \sum_{j=1}^{q} (Y^{(h)} - \hat{Y})^2 =  \sum_{i=1}^{n} \sum_{j=1}^{q} (Y^{(h+1)}_{i,j})^2$
