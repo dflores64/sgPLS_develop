@@ -44,7 +44,7 @@ perf.PLS <- function(object, K=nrow(object$X), ncomp = object$ncomp){
 
 
 # performance assessment for PLSda
-perf.PLSda <- function(object, ncomp = object$ncomp, method = "max.dist"){
+perf.PLSda <- function(object, K=nrow(object$X), ncomp = object$ncomp, method = "max.dist"){
   
   X <- object$X
   Y <- map(object$Y)
