@@ -62,7 +62,7 @@ Let's also notice that, on average, the response $Y$ is a linear combination fro
 ### First data set
 
 ```{r}
-data <- create.data()
+data <- data.create()
 X <- data$X
 Y <- data$Y
 
