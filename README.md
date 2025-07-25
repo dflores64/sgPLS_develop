@@ -50,17 +50,10 @@ Let's give some simple examples : we will create and use three datasets:
 
 - the last dataset contains real data about NIR spectra.
 
-The function below allow to create the first two datasets.
+To access to predefined functions from sgPLSdevelop package, run this line :
 
 ```{r pressure, echo=FALSE}
-create.data <- function(n = 40, p = 10, q = 1){
-  X <- matrix(data = runif(n*p),n,p)
-  U <- matrix(data = runif(q*p,-10,10), nrow = p, ncol = q)
-  E <- matrix(data = rnorm(n*p),n,p)
-  Y <- X%*%U + E
-  D <- data.frame(X,Y)
-  return(list(X = X,Y = Y))
-}
+library(sgPLSdevelop)
 ```
 
 By default, the population is set to $n = 40$ which is close to actual conditions. In this case, we have $p < n$ ; a not very large value of $p$ avoids a long time of execution.
