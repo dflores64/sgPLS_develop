@@ -83,7 +83,7 @@ According to the graph, the $Q^2$ is rapidly close to $1$ from the second compon
 ### Second data set
 
 ```{r}
-data <- create.data(q = 5)
+data <- data.create(q = 5)
 X <- data$X
 Y <- data$Y
 
