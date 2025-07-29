@@ -1,26 +1,33 @@
 \name{predict}
 \encoding{latin1}
+\alias{predict.PLS}
 \alias{predict.sgPLS}
 \alias{predict.gPLS}
 \alias{predict.sPLS}
+\alias{predict.PLSda}
 \alias{predict.sgPLSda}
 \alias{predict.gPLSda}
 \alias{predict.sPLSda}
 
-\title{Predict Method for sPLS, gPLS, sgPLS, sPLDda, gPLSda, sgPLSda}
+\title{Predict Method for PLS, sPLS, gPLS, sgPLS, sPLDda, gPLSda, sgPLSda}
 
 \description{
-Predicted values based on sparse PLS, group PLS, sparse group PLS, sparse PLSda, group PLSda, sparse group PLSda models. New responses and 
+Predicted values based on PLS, sparse PLS, group PLS, sparse group PLS, PLSda, sparse PLSda, group PLSda, sparse group PLSda models. New responses and 
 variates are predicted using a fitted model and a new matrix of observations.
 }
 
 \usage{
+
+\method{predict}{PLS}(object, newdata, ...)
 
 \method{predict}{sPLS}(object, newdata, ...)
 
 \method{predict}{gPLS}(object, newdata, ...)
 
 \method{predict}{sgPLS}(object, newdata, ...)
+
+\method{predict}{PLSda}(object, newdata, method = c("all", "max.dist", 
+        "centroids.dist", "mahalanobis.dist"), ...)
 
 \method{predict}{sPLSda}(object, newdata, method = c("all", "max.dist", 
         "centroids.dist", "mahalanobis.dist"), ...)
@@ -37,9 +44,9 @@ variates are predicted using a fitted model and a new matrix of observations.
 }
 
 \arguments{
-  \item{object}{object of class inheriting from \code{"sPLS"}, \code{"gPLS"}, \code{"sgPLS"},  \code{"sPLSda"}, \code{"gPLSda"} or  \code{"sgPLSda"}.}
+  \item{object}{object of class inheriting from \code{"PLS"}, \code{"sPLS"}, \code{"gPLS"}, \code{"sgPLS"}, \code{"PLSda"}, \code{"sPLSda"}, \code{"gPLSda"} or  \code{"sgPLSda"}.}
   \item{newdata}{data matrix in which to look for for explanatory variables to be used for prediction.}
-   \item{method}{method to be applied for \code{sPLSda}, \code{gPLSda} or \code{sgPLSda} to predict the class of new data, 
+   \item{method}{method to be applied for \code{"PLSda"}, \code{sPLSda}, \code{gPLSda} or \code{sgPLSda} to predict the class of new data, 
     should be a subset of \code{"centroids.dist"}, \code{"mahalanobis.dist"} or \code{"max.dist"} (see Details). 
 	Defaults to \code{"all"}.}
   \item{...}{not used currently.}
@@ -49,11 +56,11 @@ variates are predicted using a fitted model and a new matrix of observations.
 The \code{predict} function for pls and spls object has been created by Sebastien Dejean, Ignacio Gonzalez, Amrit Singh and Kim-Anh Le Cao for \code{mixOmics} package. Similar code is used for sPLS, gPLS, sgPLS, sPLSda, gPLSda, sgPLSda models performed by \code{sgPLS} package. 	
 	
 \code{predict} function produces predicted values, obtained by evaluating the sparse PLS, group PLS or sparse group PLS  
-model returned by \code{sPLS}, \code{gPLS} or \code{sgPLS} in the frame \code{newdata}. 
+model returned by \code{"PLS"}, \code{sPLS}, \code{gPLS} or \code{sgPLS} in the frame \code{newdata}. 
 Variates for \code{newdata} are also returned. The prediction values are calculated based on the regression coefficients of \code{object$Y} onto \code{object$variates$X}.
 
 
-Different class prediction methods are proposed for \code{sPLSda}, \code{gPLSda} or \code{sgPLSda}: \code{"max.dist"} 
+Different class prediction methods are proposed for \code{"PLSda"}, \code{sPLSda}, \code{gPLSda} or \code{sgPLSda}: \code{"max.dist"} 
 is the naive method to predict the class. It is based on the predicted matrix (\code{object$predict}) 
 which can be seen as a probability matrix to assign each test data to a class. The class with the largest 
 class value is the predicted class. \code{"centroids.dist"} allocates the individual \eqn{x} to the class of 
@@ -82,7 +89,7 @@ Tenenhaus, M. (1998). \emph{La r\'egression PLS: th\'eorie et pratique}. Paris: 
 \author{Benoit Liquet and Pierre Lafaye de Micheaux}
 
 
-\seealso{\code{\link{sPLS}}, \code{\link{gPLS}}, \code{\link{sgPLS}}, \code{\link{sPLSda}}, \code{\link{gPLSda}}, \code{\link{sgPLSda}}.}
+\seealso{\code{\link{PLS}}, \code{\link{sPLS}}, \code{\link{gPLS}}, \code{\link{sgPLS}}, \code{\link{PLSda}}, \code{\link{sPLSda}}, \code{\link{gPLSda}}, \code{\link{sgPLSda}}.}
 
 
 \keyword{regression}
