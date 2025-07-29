@@ -1,4 +1,4 @@
-q2.pls <- function(object, ncomp.max = object$ncomp, mode = "regression"){
+q2.PLS <- function(object, ncomp.max = object$ncomp, mode = "regression"){
   
   X <- object$X
   Y <- object$Y
@@ -216,3 +216,5 @@ q2.pls <- function(object, ncomp.max = object$ncomp, mode = "regression"){
   return(q2.pls.results)
   
 }
+
+q2.pls <- q2.PLS
