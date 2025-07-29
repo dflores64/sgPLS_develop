@@ -5,6 +5,11 @@ perf.PLS <- function(object, K=nrow(object$X), ncomp = object$ncomp){
   Y <- object$Y
   n <- nrow(X)
   p <- ncol(X)
+
+  # conditions check-up
+  if(!("pls" %in% class(object)) && class(object) != "mixo_pls"){ stop("object class must either contain pls class or be mixo_pls class."); print(class(object))}
+  
+  if(ncomp.max > object$ncomp || ncomp.max <= 0){ stop(paste("ncomp.max must be set up between 0 and",object$ncomp,"which is the total number of components computed in the object model."))}
   
   # prediction analysis
   err <- matrix(NA, nrow = K, ncol = ncomp)
