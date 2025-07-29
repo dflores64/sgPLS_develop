@@ -4,6 +4,7 @@ q2.pls <- function(object, ncomp.max = object$ncomp, mode = "regression"){
   Y <- object$Y
   c <- object$mat.c
   d <- object$mat.d
+  n <- nrow(X)
   p <- ncol(X)
   q <- ncol(Y)
   ncomp.object <- object$ncomp
@@ -12,7 +13,6 @@ q2.pls <- function(object, ncomp.max = object$ncomp, mode = "regression"){
   if(!("pls" %in% class(object)) && class(object) != "mixo_pls"){ stop("object class must either contain pls class or be mixo_pls class."); print(class(object))}
   
   if(ncomp.max > object$ncomp || ncomp.max <= 0){ stop(paste("ncomp.max must be set up between 0 and",object$ncomp,"which is the total number of components computed in the object model."))}
-  n <- nrow(X)
   
   if(mode != "regression" && mode != "canonical"){ stop("mode must be either << regression >> or << canonical >>")}
   
