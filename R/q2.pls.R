@@ -1,4 +1,4 @@
-q2.pls <- function(object, mode = "regression", ncomp.max = object$ncomp){
+q2.pls <- function(object, ncomp.max = object$ncomp, mode = "regression"){
   
   X <- object$X
   Y <- object$Y
@@ -6,9 +6,15 @@ q2.pls <- function(object, mode = "regression", ncomp.max = object$ncomp){
   d <- object$mat.d
   p <- ncol(X)
   q <- ncol(Y)
+  ncomp.object <- object$ncomp
   
-  if(nrow(X)!=nrow(Y)){ stop("X and Y have not the same number of rows.")}
+  # conditions check-up
+  if(!("pls" %in% class(object)) && class(object) != "mixo_pls"){ stop("object class must either contain pls class or be mixo_pls class."); print(class(object))}
+  
+  if(ncomp.max > object$ncomp || ncomp.max <= 0){ stop(paste("ncomp.max must be set up between 0 and",object$ncomp,"which is the total number of components computed in the object model."))}
   n <- nrow(X)
+  
+  if(mode != "regression" && mode != "canonical"){ stop("mode must be either << regression >> or << canonical >>")}
   
   q2 <- numeric(ncomp.max)
   PRESS <- numeric(ncomp.max)
@@ -111,7 +117,7 @@ q2.pls <- function(object, mode = "regression", ncomp.max = object$ncomp){
     # RSS0 computing
     X.mean <- t(matrix(colMeans(X), nrow = p, ncol = n)) #mean for each column
     RSS0 <- sum(colSums((X-X.mean)^2))
-    
+
     X_press <- list()
     X_press[[1]] <- X
     
@@ -155,7 +161,7 @@ q2.pls <- function(object, mode = "regression", ncomp.max = object$ncomp){
         res.deflat <- step2.spls(X=X_train_scaled,Y=Y_train_scaled,ui,vi,mode="regression")
         X_train_scaled = res.deflat$X.h
         Y_train_scaled = res.deflat$Y.h
-        
+
       }
       
     }
