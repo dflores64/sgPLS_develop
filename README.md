@@ -30,9 +30,7 @@ We compare the value of this criterion to a certain limit $l$ ; this limit is co
 
 The $Q^2$ function, available below and named as `q2.pls()`, takes four parameters : 
 
-- the $X$ matrix which is the predictors values
-
-- the $Y$ matrix which is the response values
+- the model ("pls" class object)
 
 - the mode : we must choose between "regression" or "canonical"
 
