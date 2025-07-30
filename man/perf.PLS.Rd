@@ -38,7 +38,7 @@
 library(sgPLSdevelop)
 
 ## data and model creation 
-d <- data.create()
+d <- data.create(p = 10, list = TRUE)
 n <- nrow(d$X)
 ncomp.max <- 10
 X <- d$X
