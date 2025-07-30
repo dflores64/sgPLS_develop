@@ -119,7 +119,7 @@ train <- 1:40
 test <- 41:50
 n.test <- length(test)
 
-d <- data.create(n=50, q=2)
+d <- data.create(n=50, p=10, q=2, list=TRUE)
 
 X <- d$X[train,]
 Y <- d$Y[train,]
