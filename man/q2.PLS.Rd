@@ -16,8 +16,8 @@ q2.PLS(object, mode = "regression", ncomp.max = object$ncomp)
 
 \arguments{
   \item{object}{Object of class inheriting from \code{"pls"}.}
-  \item{comp.max}{The number of components desired for q2 computing (no more than the number of components computed in the model).}
-  \item{mode}{Character string. What type of algorithm to use, (partially) matching one of "regression" or "canonical". See Details.}
+  \item{mode}{Character string. What type of algorithm to use, (partially) matching one of "regression" or "canonical".}
+  \item{ncomp.max}{The number of components desired for q2 computing (no more than the number of components computed in the model).}
 }
 
 \details{
