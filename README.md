@@ -1,4 +1,4 @@
----
+<img width="898" height="700" alt="image" src="https://github.com/user-attachments/assets/decaa5a7-1e4b-4e0c-9376-02ec62276409" />---
 title: "Q2 indicator for PLS model assessment"
 output: html_document
 date: "2025-06-03"
@@ -60,7 +60,7 @@ Let's also notice that, on average, the response $Y$ is a linear combination fro
 ### First data set
 
 ```{r}
-data <- data.create()
+data <- data.create(p = 10, list = TRUE)
 X <- data$X
 Y <- data$Y
 
@@ -81,7 +81,7 @@ According to the graph, the $Q^2$ is rapidly close to $1$ from the second compon
 ### Second data set
 
 ```{r}
-data <- data.create(q = 5)
+data <- data.create(p = 10, q = 5, list = TRUE)
 X <- data$X
 Y <- data$Y
 
