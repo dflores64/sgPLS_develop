@@ -2,7 +2,7 @@
 \alias{q2.PLS}
 
 \title{
-Performance PLS function assessment using Q2 indicator.
+  PLS function performance assessment using Q2 indicator.
 }
 \description{
 The \code{q2.PLS} function allows to assess PLS models using \eqn{Q2} criterion. 
