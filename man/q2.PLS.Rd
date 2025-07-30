@@ -44,7 +44,11 @@ K.-A. Le Cao, Zoe Welham, \emph{Multivariate data integration using R} (pages 17
 
 library(sgPLSdevelop)
 
-d <- data.create(n=50, q=2)
+d <- data.create(p = 10, q = 3, list = TRUE)
+n <- nrow(d$X)
+ncomp.max <- 10
+X <- d$X
+Y <- d$Y)
 X <- d$X
 Y <- d$Y
 
