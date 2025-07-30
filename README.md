@@ -1,4 +1,3 @@
-<img width="898" height="700" alt="image" src="https://github.com/user-attachments/assets/decaa5a7-1e4b-4e0c-9376-02ec62276409" />---
 title: "Q2 indicator for PLS model assessment"
 output: html_document
 date: "2025-06-03"
