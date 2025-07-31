@@ -2,7 +2,7 @@
 \alias{q2.PLS}
 
 \title{
-  PLS function performance assessment using Q2 indicator.
+PLS function performance assessment using Q2 indicator.
 }
 \description{
 The \code{q2.PLS} function allows to assess PLS models using \eqn{Q2} criterion. 
@@ -21,7 +21,7 @@ q2.PLS(object, mode = "regression", ncomp.max = object$ncomp)
 }
 
 \details{
-  A suggestion about the number of components selection is also given by Q2 criterion.
+A suggestion about the number of components selection is also given by Q2 criterion.
 Endly, other indicators are given such as PRESS and RSS for each number of components 
 and such as \eqn{PRESSj} and \eqn{RSSj} (matrices) for a given number of components and for a given column of Y dataset.
 }
@@ -45,16 +45,13 @@ K.-A. Le Cao, Zoe Welham, \emph{Multivariate data integration using R} (pages 17
 library(sgPLSdevelop)
 
 d <- data.create(p = 10, q = 3, list = TRUE)
-n <- nrow(d$X)
-ncomp.max <- 10
-X <- d$X
-Y <- d$Y)
 X <- d$X
 Y <- d$Y
-
+n <- nrow(X)
 ncomp.max <- 10
 model.pls <- PLS(X = X, Y = Y, ncomp = ncomp.max, mode = "regression")
 
+# q2 function
 q2.res <- q2.PLS(model.pls, ncomp.max = ncomp.max, mode = "regression")
 
 # q2 values
