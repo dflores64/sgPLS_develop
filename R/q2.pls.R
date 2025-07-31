@@ -206,9 +206,9 @@ q2.PLS <- function(object, ncomp.max = object$ncomp, mode = "regression"){
   
   # Plot
   plot(q2, type = "b", col = "blue", pch = 16,
-       main = "Q² performance according to the number of components",
+       main = "Model Q² performance",
        xlab = "Number of components", ylab = "Q²")
-  abline(h = 0.0975, col = "red", lty = 2)
+  abline(h = lim, col = "red", lty = 2)
   
   suggestion <- paste("best number of components : H =",h.best)
   
