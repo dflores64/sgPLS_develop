@@ -92,5 +92,5 @@ perf.PLSda <- function(object, K=nrow(object$X), ncomp = object$ncomp, method = 
   h.best <- min(which.min(err.moy))
   plot(err.moy, col="blue", pch = 16, type = "b", main = "Error rate of the model", xlab = "number of components", ylab = "Error")
   
-  return(setNames(list(err.moy,h.best),c("error","h.best")))
+  return(setNames(list(err.moy,h.best),c("error.rate","h.best")))
 }
