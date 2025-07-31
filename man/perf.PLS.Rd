@@ -8,7 +8,7 @@
   The \code{perf.PLS} function allows to assess PLS models using\eqn{MSEP} criterion. 
   This function returns a list including \eqn{MSEP} values for each number of components.
   \code{perf.PLS} gives also a suggestion about the number of components selection.
-  A plot allows to visualize the model performance according to the number of components.
+  A plot allows to visualize the model MSEP according to the number of components.
 }
 \usage{
   perf.PLS(object, ncomp = object$ncomp, K=nrow(object$X))
