@@ -2,7 +2,7 @@
 \alias{perf.PLS}
 
 \title{
-  PLS function performance assessment using \eqn{MSEP} indicator
+PLS function performance assessment using \eqn{MSEP} indicator
 }
 \description{
   The \code{perf.PLS} function allows to assess PLS models using\eqn{MSEP} criterion. 
@@ -11,7 +11,7 @@
   A plot allows to visualize the model MSEP according to the number of components.
 }
 \usage{
-  perf.PLS(object, ncomp = object$ncomp, K=nrow(object$X))
+perf.PLS(object, ncomp = object$ncomp, K=nrow(object$X))
 }
 
 \arguments{
@@ -21,7 +21,7 @@
 }
 
 \details{
-  \eqn{K} must be a value between 2 and the the number of rows of the dataset used for training model.
+  \eqn{K} must be a value between 2 and the number of rows of the dataset used for training model.
   
   MSEP is defined by mean of squared error between the true \eqn{Y} values and their associated predictions.
 }
