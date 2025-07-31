@@ -2,7 +2,7 @@
 \alias{perf.PLS}
 
 \title{
-  Performance PLS function assessment using \eqn{MSEP} indicator
+  PLS function performance assessment using \eqn{MSEP} indicator
 }
 \description{
   The \code{perf.PLS} function allows to assess PLS models using\eqn{MSEP} criterion. 
@@ -39,15 +39,15 @@ library(sgPLSdevelop)
 
 ## data and model creation 
 d <- data.create(p = 10, list = TRUE)
-n <- nrow(d$X)
-ncomp.max <- 10
 X <- d$X
 Y <- d$Y
+n <- nrow(X)
+ncomp.max <- 10
 modele <- PLS(X,Y,ncomp = ncomp.max, mode = "regression")
 
 ## using perf.PLS function
 perf.res <- perf.PLS(modele)
 perf.res$MSEP 
-perf.res$h.best #number of components suggestion 
+perf.res$h.best #optimal components number suggestion 
 
 }
