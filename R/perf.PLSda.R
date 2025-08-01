@@ -27,9 +27,9 @@ perf.PLS <- function(object, K=nrow(object$X), ncomp = object$ncomp){
     ind.test <- ind[ind.beg:ind.end]
     nk <- length(ind.test)
     X.train <- X[-ind.test,]
-    Y.train <- Y[-ind.test]
+    Y.train <- Y[-ind.test,]
     X.test <- X[ind.test,]
-    Y.test <- Y[ind.test]
+    Y.test <- Y[ind.test,]
     modele <- PLS(X = X.train, Y = Y.train, ncomp = ncomp, mode = "regression")  
     
     for(h in 1:ncomp){  
