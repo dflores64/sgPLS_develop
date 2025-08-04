@@ -1,0 +1,9 @@
+---
+title: "PLS-DA_performance"
+output: html_document
+date: "2025-08-01"
+---
+
+# Introduction
+
+This page presents an application of the PLSDA performance assessment. The PLS method is a quite particular method : there are several predictions according to the components number selected in the model. It is the same with PLSDA. The goal is almost to choose the best number of component in PLS regression in order to compute the best possible predictions.
