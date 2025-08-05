@@ -5,7 +5,7 @@
 \title{Partial Least Squares (PLS)}
 
 \description{A function for performing a partial least squares (OLS) method on two data sets with more columns than rows.
-The OLS approach is therefore useful for data sets where OLS regression is not possible.
+The PLS approach is therefore useful for data sets where OLS regression is not possible.
 }
 
 \usage{
@@ -135,3 +135,4 @@ pred <- predict.PLS(model.pls, newdata = X.test)$predict
 
 \keyword{regression}
 \keyword{multivariate}
+
