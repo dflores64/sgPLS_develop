@@ -1,4 +1,5 @@
-data.create <- function(n = 40, p = 3, q = 1, list = FALSE){  
+data.create <- function(n = 40, p = 10, q = 1, list = FALSE){
+  
   X <- matrix(data = rnorm(n*p),n,p)
   B <- matrix(data = runif(q*p,-1,1), nrow = p, ncol = q)
   E <- matrix(data = rnorm(n*q, sd = 0.1),n,q)
@@ -8,10 +9,11 @@ data.create <- function(n = 40, p = 3, q = 1, list = FALSE){
   if(q > 1){colnames(Y) <- paste0(rep("Y",q),1:q)}
   D <- data.frame(X,Y)
   
-  if(list){return(list(D = D,X = X,Y = Y))}else{return(D)}
+  if(list){return(list(B = B,D = D,X = X,Y = Y))}else{return(D)}
 }
 
-data.cl.create <- function(n = 40, p = 3, classes = 2, list = FALSE){
+data.cl.create <- function(n = 40, p = 10, classes = 2, list = FALSE){
+  
   X <- matrix(nrow = n, ncol = p)
   Y <- numeric(n)
   for(i in seq_len(n)){
@@ -21,5 +23,5 @@ data.cl.create <- function(n = 40, p = 3, classes = 2, list = FALSE){
   
   if(p > 1){colnames(X) <- paste0(rep("X",p),1:p)}
   D <- data.frame(X,Y)
-  if(list){return(list(D = D,X = X,Y = Y))}else{return(D)}
+  if(list){return(list(D = D,X = X,Y = Y,Y.f = as.factor(Y)))}else{return(D)}
 }
