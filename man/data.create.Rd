@@ -11,8 +11,8 @@ These functions allow to generate a dataset with linear dependance between \eqn{
 }
 
 \usage{
-data.create(n = 40, p = 10, q = 1, list = FALSE)
-data.cl.create(n = 40, p = 10, classes = 2, list = FALSE)
+data.create(n = 40, p = 10, q = 1, list = TRUE)
+data.cl.create(n = 40, p = 10, classes = 2, list = TRUE)
 }
 
 \arguments{
@@ -20,7 +20,7 @@ data.cl.create(n = 40, p = 10, classes = 2, list = FALSE)
   \item{p}{number of \eqn{X} variables}
   \item{q}{number of \eqn{Y} variables with \code{data.create} function} 
   \item{classes}{number of classes to generate with \code{data.cl.create} function}
-  \item{list}{By default, return a dataframe. If the argument \code{list} is set to \code{TRUE}, a list including the dataframe is returned.}
+  \item{list}{By default, returns a list including the dataframe. If the argument \code{list} is set to \code{FALSE}, only the dataframe is returned.}
 }
 
 \details{
@@ -50,3 +50,4 @@ Y <- data$Y
 data.cl <- data.cl.create(n = 20, p = 5, classes = 3, list = TRUE)
 X <- data.cl$X
 Y <- data.cl$Y
+
