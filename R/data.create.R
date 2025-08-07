@@ -1,4 +1,4 @@
-data.create <- function(n = 40, p = 10, q = 1, list = FALSE){
+data.create <- function(n = 40, p = 10, q = 1, list = TRUE){
   
   X <- matrix(data = rnorm(n*p),n,p)
   B <- matrix(data = runif(q*p,-1,1), nrow = p, ncol = q)
@@ -12,7 +12,7 @@ data.create <- function(n = 40, p = 10, q = 1, list = FALSE){
   if(list){return(list(B = B,D = D,X = X,Y = Y))}else{return(D)}
 }
 
-data.cl.create <- function(n = 40, p = 10, classes = 2, list = FALSE){
+data.cl.create <- function(n = 40, p = 10, classes = 2, list = TRUE){
   
   X <- matrix(nrow = n, ncol = p)
   Y <- numeric(n)
@@ -25,3 +25,4 @@ data.cl.create <- function(n = 40, p = 10, classes = 2, list = FALSE){
   D <- data.frame(X,Y)
   if(list){return(list(D = D,X = X,Y = Y,Y.f = as.factor(Y)))}else{return(D)}
 }
+
