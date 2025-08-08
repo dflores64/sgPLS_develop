@@ -78,14 +78,7 @@ PLS <- function(X,Y,ncomp,mode){
 }
 
 # PLSda function ------------------------------------------
-PLSda <-
-  function(X, 
-           Y,		
-           ncomp = 2, 
-           keepX = rep(ncol(X), ncomp),
-           max.iter = 500,		 
-           tol = 1e-06)
-  {
+PLSda <- function(X,Y,ncomp = 2){
     
     # Testing the input Y
     if (is.null(dim(Y)))
@@ -99,7 +92,7 @@ PLSda <-
     result = PLS(X, ind.mat, ncomp = ncomp, mode = "regression")
     
     cl = match.call()
-    cl[[1]] = as.name('sPLSda')
+    cl[[1]] = as.name('PLSda')
     result$call = cl
     
     result$ind.mat = ind.mat
