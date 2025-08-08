@@ -1,4 +1,4 @@
-q2.PLS <- function(object, ncomp.max = object$ncomp, mode = "regression"){
+q2.PLS <- function(object, ncomp = object$ncomp, mode = "regression"){
   
   X <- object$X
   Y <- object$Y
@@ -12,19 +12,19 @@ q2.PLS <- function(object, ncomp.max = object$ncomp, mode = "regression"){
   # conditions check-up
   if(!("pls" %in% class(object)) && class(object) != "mixo_pls"){ stop("object class must either contain pls class or be mixo_pls class."); print(class(object))}
   
-  if(ncomp.max > object$ncomp || ncomp.max <= 0){ stop(paste("ncomp.max must be set up between 0 and",object$ncomp,"which is the total number of components computed in the object model."))}
+  if(ncomp > object$ncomp || ncomp <= 0){ stop(paste("ncomp must be set up between 0 and",object$ncomp,"which is the total number of components computed in the object model."))}
   
   if(mode != "regression" && mode != "canonical"){ stop("mode must be either << regression >> or << canonical >>")}
   
-  q2 <- numeric(ncomp.max)
-  PRESS <- numeric(ncomp.max)
-  RSS <- numeric(ncomp.max)
+  q2 <- numeric(ncomp)
+  PRESS <- numeric(ncomp)
+  RSS <- numeric(ncomp)
   
   
   if(mode == "regression"){
     
-    RSSj <- matrix(nrow = ncomp.max, ncol = q)
-    PRESSj <- matrix(nrow = ncomp.max, ncol = q)
+    RSSj <- matrix(nrow = ncomp, ncol = q)
+    PRESSj <- matrix(nrow = ncomp, ncol = q)
     
     # RSS0 computing
     Y.mean <- t(matrix(colMeans(Y), nrow = q, ncol = n)) #mean for each column
@@ -34,7 +34,7 @@ q2.PLS <- function(object, ncomp.max = object$ncomp, mode = "regression"){
     Y_test <- list()
     Y_test[[1]] <- Y
     
-    for(h in 1:ncomp.max){
+    for(h in 1:ncomp){
       Y_test[[h+1]] <- matrix(nrow = n, ncol = q)
     }
     
@@ -57,7 +57,7 @@ q2.PLS <- function(object, ncomp.max = object$ncomp, mode = "regression"){
       X_test <- X[i,]
       X_test_scaled <- (X_test - X_means) / X_sds
       
-      for(h in 1:ncomp.max){
+      for(h in 1:ncomp){
         
         # training on the dataset without the ith individual
         model <- PLS(X = X_train_scaled, Y = Y_train_scaled, ncomp = 1, mode = "regression")
@@ -78,7 +78,7 @@ q2.PLS <- function(object, ncomp.max = object$ncomp, mode = "regression"){
       
     }
     
-    for(h in 1:ncomp.max){
+    for(h in 1:ncomp){
       
       # deflation matrices
       u <- object$loadings$X[,h]
@@ -111,8 +111,8 @@ q2.PLS <- function(object, ncomp.max = object$ncomp, mode = "regression"){
     
   }else if(mode == "canonical"){ # CASE OF CANONICAL MODE 
     
-    RSSj <- matrix(nrow = ncomp.max, ncol = p)
-    PRESSj <- matrix(nrow = ncomp.max, ncol = p)
+    RSSj <- matrix(nrow = ncomp, ncol = p)
+    PRESSj <- matrix(nrow = ncomp, ncol = p)
     
     # RSS0 computing
     X.mean <- t(matrix(colMeans(X), nrow = p, ncol = n)) #mean for each column
@@ -121,7 +121,7 @@ q2.PLS <- function(object, ncomp.max = object$ncomp, mode = "regression"){
     X_press <- list()
     X_press[[1]] <- X
     
-    for(h in 1:ncomp.max){
+    for(h in 1:ncomp){
       X_press[[h+1]] <- matrix(nrow = n, ncol = p)
     }
     
@@ -144,7 +144,7 @@ q2.PLS <- function(object, ncomp.max = object$ncomp, mode = "regression"){
       X_test <- X[i,]
       X_test_scaled <- (X_test - X_means) / X_sds
       
-      for(h in 1:ncomp.max){
+      for(h in 1:ncomp){
         
         model <- PLS(X = X_train_scaled, Y = Y_train_scaled, ncomp = h, mode = "regression")
         
@@ -166,7 +166,7 @@ q2.PLS <- function(object, ncomp.max = object$ncomp, mode = "regression"){
       
     }
     
-    for(h in 1:ncomp.max){
+    for(h in 1:ncomp){
       
       # deflation matrices
       u <- object$loadings$X[,h]
@@ -215,4 +215,5 @@ q2.PLS <- function(object, ncomp.max = object$ncomp, mode = "regression"){
   q2.pls.results <- list(suggestion = suggestion, h.best = h.best, q2 = q2, PRESS = PRESS, RSS = RSS, PRESSj = PRESSj, RSSj = RSSj)
   return(q2.pls.results)
   
+
 }
