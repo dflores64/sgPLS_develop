@@ -202,7 +202,7 @@ q2.PLS <- function(object, ncomp = object$ncomp, mode = "regression"){
   }# end if loop
   
   lim <- 0.0975
-  h.best <- which.min(q2[q2 > lim])
+  h.best <- max(which(q2 > lim))
   
   # Plot
   plot(q2, type = "b", col = "blue", pch = 16,
@@ -217,3 +217,4 @@ q2.PLS <- function(object, ncomp = object$ncomp, mode = "regression"){
   
 
 }
+
