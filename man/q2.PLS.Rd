@@ -11,12 +11,12 @@ A plot allows to visualize the model performance according to the number of comp
 }
 
 \usage{
-q2.PLS(object, ncomp.max = object$ncomp, mode = "regression")
+q2.PLS(object, ncomp = object$ncomp, mode = "regression")
 }
 
 \arguments{
   \item{object}{Object of class inheriting from \code{"pls"}.}
-  \item{ncomp.max}{The number of components desired for q2 computing (no more than the number of components computed in the model).}
+  \item{ncomp}{The number of components desired for q2 computing (no more than the number of components computed in the model).}
   \item{mode}{Character string. What type of algorithm to use, (partially) matching one of "regression" or "canonical".}
 }
 
@@ -27,7 +27,7 @@ and such as \eqn{PRESSj} and \eqn{RSSj} (matrices) for a given number of compone
 }
 
 \value{
-\eqn{PRESSj} and \eqn{RSSj} are matrices of size \eqn{ncomp.max} x \eqn{q}.
+\eqn{PRESSj} and \eqn{RSSj} are matrices of size \eqn{ncomp} x \eqn{q}.
 The row sums of \eqn{PRESSj} and \eqn{RSSj} give respectively PRESS and RSS.
 }
 
@@ -54,7 +54,7 @@ model <- PLS(X = X, Y = Y, ncomp = ncomp.max, mode = "regression")
 par(mfrow = c(1,2))
 q2.res <- q2.PLS(model, ncomp = ncomp.max, mode = "regression")
 h.best <- q2.res$h.best
-q2.PLS(model, ncomp.max = min(h.best+1, ncomp.max))$q2
+q2.PLS(model, ncomp = min(h.best+1, ncomp.max))$q2
 
 # q2 values
 q2.res$q2
@@ -72,3 +72,4 @@ q2.res$PRESSj
 #q2.res$RSSj
 
 }
+
