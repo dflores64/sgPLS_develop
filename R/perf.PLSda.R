@@ -1,5 +1,5 @@
 # performance assessment for PLS
-perf.PLS <- function(object, K=nrow(object$X), ncomp = object$ncomp){
+perf.PLS <- function(object, ncomp = object$ncomp, K=nrow(object$X)){
   
   X <- object$X
   Y <- object$Y
@@ -9,7 +9,7 @@ perf.PLS <- function(object, K=nrow(object$X), ncomp = object$ncomp){
   # conditions check-up
   if(!("pls" %in% class(object)) && class(object) != "mixo_pls"){ stop("object class must either contain pls class or be mixo_pls class."); print(class(object))}
   
-  if(ncomp.max > object$ncomp || ncomp.max <= 0){ stop(paste("ncomp.max must be set up between 0 and",object$ncomp,"which is the total number of components computed in the object model."))}
+  if(ncomp > object$ncomp || ncomp <= 0){ stop(paste("ncomp must be set up between 0 and",object$ncomp,"which is the total number of components computed in the object model."))}
 
   if(K < 2 || K > n){ stop(paste("K must be a value between 2 and",n))}
   
@@ -51,7 +51,7 @@ perf.PLS <- function(object, K=nrow(object$X), ncomp = object$ncomp){
 
 
 # performance assessment for PLSda
-perf.PLSda <- function(object, K=nrow(object$X), ncomp = object$ncomp, method = "max.dist"){
+perf.PLSda <- function(object, ncomp = object$ncomp, K=nrow(object$X), method = "max.dist"){
   
   X <- object$X
   Y <- map(object$Y)
@@ -94,3 +94,4 @@ perf.PLSda <- function(object, K=nrow(object$X), ncomp = object$ncomp, method = 
   
   return(setNames(list(err.moy,h.best),c("error.rate","h.best")))
 }
+
