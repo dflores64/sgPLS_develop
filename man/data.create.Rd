@@ -38,8 +38,7 @@ The list returns also \code{Y.f} an other version of \code{Y} but from factor cl
 
 \examples{
 
-library(sgPLS)
-library(sgPLSdevelop)
+library(sgPLSdevelop, warn.conflicts = FALSE, verbose = FALSE, quietly = TRUE)
 
 # data.create
 data <- data.create(n = 20, p = 5, q = 2, list = TRUE)
@@ -51,3 +50,4 @@ data.cl <- data.cl.create(n = 20, p = 5, classes = 3, list = TRUE)
 X <- data.cl$X
 Y <- data.cl$Y
 
+}
