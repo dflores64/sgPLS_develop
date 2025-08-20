@@ -2,9 +2,9 @@ import(mixOmics)
 
 export(sgPLS,gPLS,sPLS,PLS,per.variance,plotcim,select.sgpls,select.spls,normv,
 soft.thresholding,soft.thresholding.group,soft.thresholding.sparse.group,lambda.quadra,
-step1.spls.sparsity,step1.sparse.group.spls.sparsity,step1.group.spls.sparsity,step2.spls,perf,perf.sPLS,perf.gPLS,perf.sgPLS,
-predict.PLS,predict.sPLS,predict.gPLS,predict.sgPLS,predict.PLSda,tuning.gPLS.X,tuning.sgPLS.X,tuning.sPLS.X,sgPLSda,gPLSda,sPLSda,PLSda,
-q2.PLS,perf.PLS,perf.PLSda,data.create,data.cl.create)
+step1.spls.sparsity,step1.sparse.group.spls.sparsity,step1.group.spls.sparsity,step2.spls,perf,perf.PLS,perf.sPLS,perf.gPLS,perf.sgPLS,
+predict.PLS,predict.sPLS,predict.gPLS,predict.sgPLS,tuning.gPLS.X,tuning.sgPLS.X,tuning.sPLS.X,sgPLSda,gPLSda,sPLSda,PLSda,msep.PLS,
+q2.PLS,perf.PLSda)
 
 importFrom("stats", "coefficients", "cor", "lm", "predict", "uniroot","var")
 importFrom("utils", "setTxtProgressBar", "txtProgressBar")
@@ -20,11 +20,12 @@ S3method(predict, sPLSda)
 S3method(predict, gPLSda)
 S3method(predict, sgPLSda)
 
-
+S3method(perf, PLS)
 S3method(perf, sPLS)
 S3method(perf, gPLS)
 S3method(perf, sgPLS)
 
+S3method(perf, PLSda)
 S3method(perf, sPLSda)
 S3method(perf, gPLSda)
 S3method(perf, sgPLSda)
