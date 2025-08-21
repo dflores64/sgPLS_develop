@@ -1,0 +1,218 @@
+---
+title: "PLS performance"
+output: html_document
+date: "2025-07-30"
+---
+
+
+# Introduction
+
+This page presents an application of the PLS performance assessment. The PLS method is a quite particular method : there are several predictions according to the number of components selected in the model. The goal is almost to choose the best number of component in PLS regression in order to compute the best possible predictions. For that, we will use three datasets: 
+
+- one is a dataset with only one response variable $Y$.
+
+- the other is a dataset with four response variables $Y = (Y1,Y2,Y3,Y4)$.
+
+- the last dataset contains real data about NIR spectra.
+
+To access to predefined functions from sgPLSdevelop package and manipulate these datasets, run these lines :
+
+```{r data, message=FALSE, warning=FALSE}
+library(sgPLSdevelop)
+library(pls)
+
+data1 <- data.create(p = 10, list = TRUE)
+data2 <- data.create(p = 10, q = 4, list = TRUE)
+data(yarn)
+data3 <- yarn
+```
+```{r, echo=FALSE}
+print(paste("First dataset dimensions :",nrow(data1$D),"x",ncol(data1$D)))
+print(paste("Second dataset dimensions :",nrow(data2$D),"x",ncol(data2$D)))
+print(paste("Yarn dataset dimensions :",nrow(data3),"x",ncol(data3)))
+```
+
+
+For the two first datasets, the population is set to $n = 40$ by default, which is close to actual conditions. 
+Let's also notice that, on average, the response $Y$ is a linear combination from the predictors $X$. Indeed, the function includes a matrix product $Y = XB + E$ with $B$ the weight matrix and $E$ matrix the gaussian noise. This linearity condition is important in order to have a good performance of the model, the PLS method using linearity combinaison. 
+
+Now, it's time to train a PLS model for each dataset built or imported.
+
+```{r pls, message=FALSE, warning=FALSE}
+ncomp.max <- 8
+
+# First model
+X <- data1$X
+Y <- data1$Y
+model1 <- PLS(X,Y,mode = "regression", ncomp = ncomp.max)
+
+# Second model
+X <- data2$X
+Y <- data2$Y
+model2 <- PLS(X,Y,mode = "regression", ncomp = ncomp.max)
+
+# Third model
+X <- data3$NIR
+Y <- data3$density
+model3 <- PLS(X,Y,mode = "regression", ncomp = ncomp.max)
+```
+
+In the continuation of this article, we will show PLS performance assessment by using $Q_2$ criterion and then $MSEP$ criterion.
+
+# Q2 criterion
+
+What is Q² indicator ?
+
+The $Q^2$ is an assessment indicator for PLS models; for each new component $h$, a new matrix $Y^{(h)}$ is obtained by deflation and compared to the corresponding prediction matrix $\hat{Y}^{(h)}$. The Q2 therefore takes this comparison into account. A $Q^2$ value close to $1$ indicates a good performance. To compute this figure, we must compute two more indicators : the $RSS$ and the $PRESS$.
+
+
+$RSS_h = \sum_{i=1}^{n} \sum_{j=1}^{q} (Y^{(h)} - \hat{Y})^2 =  \sum_{i=1}^{n} \sum_{j=1}^{q} (Y^{(h+1)}_{i,j})^2$
+
+$PRESS_h = \sum_{i\in test}^{n} \sum_{j=1}^{q} (Y_{i,j}^{(h)} - \hat{Y}_{i,j})^2 =  \sum_{i\in test}^{n} \sum_{j=1}^{q} (Y^{(h+1)}_{i,j})^2$
+
+Then, $Q^2$ is defined by this formula :
+
+$Q^2_h = 1 - \frac{PRESS_h}{RSS_{h-1}}$
+
+How to use Q² ?
+
+We compare the value of this criterion to a certain limit $l$ ; this limit is conventionally equal to $1-0.95^2 = 0.0975$. As long as we have the inequality $Q^2_h \geq l$, we keep on following iteration ; therefore we stop when we have $Q^2_h < l$.
+
+Using Q² with R
+
+The $Q^2$ function, available below and named as `q2.PLS()`, takes three parameters : 
+
+- the model ("pls" class object)
+
+- the mode : we must choose between "regression" or "canonical"
+
+- the number of maximal components
+
+
+
+### First model Q2
+
+```{r, fig.cap= "Q2 values for the first model"}
+par(mfrow = c(1,2))
+q2.res1 <- q2.PLS(model1)
+h.best <- q2.res1$h.best
+q2.PLS(model1, ncomp = min(h.best+1, ncomp.max))$q2
+```
+
+The `q2.pls` function gives us a optimal number of components to select equal to $H =$ `r h.best`, therefore we suggest to select `r h.best` components in our first model.
+
+
+### Second model Q2
+
+```{r, fig.cap= "Q2 values for the second model"}
+par(mfrow = c(1,2))
+q2.res2 <- q2.PLS(model2)
+h.best <- q2.res2$h.best
+q2.PLS(model2, ncomp = min(h.best+1, ncomp.max))$q2
+```
+
+The `q2.pls` function gives us a optimal number of components to select equal to $H =$ `r h.best`.
+
+
+
+### Third model Q2
+
+```{r, fig.cap= "Q2 values for the third model"}
+par(mfrow = c(1,2))
+q2.res3 <- q2.PLS(model3)
+h.best <- q2.res3$h.best
+q2.PLS(model3, ncomp = min(h.best+1, ncomp.max))$q2
+```
+
+The `q2.pls` function gives us a optimal number of components to select equal to $H =$ `r h.best`.
+
+# MSEP criterion
+
+An other way to assess such a model performance consists in using $MSEP$ criterion. $MSEP$ is computed as follow :
+
+$MSEP = \frac{1}{nq} \sum_{i=1}^{n} \sum_{j=1}^{q} (Y_{i,j} - \hat{Y}_{i,j})^2$
+
+Then, we select the $h_{best}$ number of components which corresponds to the lower $MSEP$ value.
+
+```{r, echo=FALSE}
+msep.PLS <- function(object, ncomp = object$ncomp, K=nrow(object$X)){
+  
+  X <- object$X
+  Y <- object$Y
+  n <- nrow(X)
+  p <- ncol(X)
+  
+  # conditions check-up
+  if(!("pls" %in% class(object)) && class(object) != "mixo_pls"){ stop("object class must either contain pls class or be mixo_pls class."); print(class(object))}
+  
+  if(ncomp > object$ncomp || ncomp <= 0){ stop(paste("ncomp.max must be a value between 0 and",object$ncomp,"which is the total number of components computed in the object model."))}
+  
+  if(K < 2 || K > n){ stop(paste("K must be a value between 2 and",n))}
+  
+  # prediction analysis
+  err <- matrix(NA, nrow = K, ncol = ncomp)
+  
+  b <- floor(n/K) # block size
+  ind <- sample(n)
+
+  for(k in seq_len(K)){
+    
+    # bloc definition
+    ind.beg <- (k-1) * b + 1 # block k beginning
+    ind.end <- k * b # block k end
+    ind.test <- ind[ind.beg:ind.end]
+    nk <- length(ind.test)
+    X.train <- X[-ind.test,]
+    Y.train <- Y[-ind.test,]
+    X.test <- X[ind.test,]
+    Y.test <- Y[ind.test,]
+    modele <- PLS(X = X.train, Y = Y.train, ncomp = ncomp, mode = "regression")  
+    
+    for(h in 1:ncomp){  
+      
+      # predictions
+      pred <- predict.PLS(modele, newdata = X.test)$predict[,,h]
+      err[k,h] <- sum(colSums(as.matrix((Y.test - pred)^2)))
+      
+    }
+  }
+  err.moy <- colSums(err)/b/K
+  
+  h.best <- min(which.min(err.moy))
+  plot(err.moy, col="blue", pch = 16, type = "b", main = "MSEP of the model", xlab = "number of components", ylab = "MSEP")
+  #abline(h = (1:9)/10, lty = 3, col = "grey")
+  
+  return(setNames(list(err.moy,h.best),c("MSEP","h.best")))
+}
+```
+
+
+### First model MSEP
+
+```{r, fig.cap= "MSEP for the first model"}
+msep.res1 <- msep.PLS(model1)
+h.best <- msep.res1$h.best
+msep.best <- msep.res1$MSEP[h.best]
+```
+
+The `msep.PLS` function gives us a optimal number of components equal to $H =$ `r h.best`, therefore we suggest to select `r h.best` components in our first model.
+
+### Second model MSEP
+
+```{r, fig.cap= "MSEP for the second model"}
+msep.res2 <- msep.PLS(model2)
+h.best <- msep.res2$h.best
+msep.best <- msep.res2$MSEP[h.best]
+```
+
+The `msep.PLS` function gives us a optimal number of components equal to $H =$ `r h.best`.
+
+### Third model MSEP
+
+```{r, fig.cap= "MSEP for the third model"}
+msep.res3 <- msep.PLS(model3)
+h.best <- msep.res3$h.best
+msep.best <- msep.res3$MSEP[h.best]
+```
+
+The `msep.PLS` function gives us a optimal number of components equal to $H =$ `r h.best`.
