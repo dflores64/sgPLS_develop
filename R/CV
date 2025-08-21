@@ -1,6 +1,6 @@
 CV <- function(X,Y,K,mode = "regression",ncomp){
   
-  n <- nrouw(X)
+  n <- nrow(X)
   p <- ncol(X)
   q <- ncol(Y)
   
