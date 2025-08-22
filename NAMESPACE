@@ -1,4 +1,4 @@
 import(mixOmics)
 
-export(select.sgpls)
+export(PLS,sPLS,gPLS,sgPLS,PLSda,sPLSda,gPLSda,sgPLSda,select.sgpls)
 
