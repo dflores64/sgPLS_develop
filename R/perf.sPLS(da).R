@@ -116,7 +116,7 @@ regul.sPLS <- function(object, K=nrow(object$X), ncomp = object$ncomp){
 
 # perf.sPLS function ------
 
-perf2.sPLS <- function(object, K=nrow(object$X), ncomp = object$ncomp){
+regul2.sPLS <- function(object, K=nrow(object$X), ncomp = object$ncomp){
   
   X <- object$X
   Y <- object$Y
@@ -307,4 +307,5 @@ perf.sPLSda <- function(object, K=nrow(object$X), ncomp = object$ncomp, method =
   
   return(setNames(list(err.moy,h.best,err.moy2,keepX.best),c("error.h","h.best","error.p","keepX.best")))
 }
+
 
