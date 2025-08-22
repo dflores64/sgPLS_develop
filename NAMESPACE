@@ -22,9 +22,10 @@ S3method(perf, gPLS)
 S3method(perf, sgPLS)
 
 #S3method(perf, PLSda)
-S3method(perf, sPLSda)
-S3method(perf, gPLSda)
-S3method(perf, sgPLSda)
+#S3method(perf, sPLSda)
+#S3method(perf, gPLSda)
+#S3method(perf, sgPLSda)
+
 
 
 
