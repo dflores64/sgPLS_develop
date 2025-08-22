@@ -1,0 +1,4 @@
+import(mixOmics)
+
+export(select.sgpls)
+
