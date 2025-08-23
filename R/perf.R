@@ -175,7 +175,7 @@ perf.PLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("M
     lim <- 0.0975
     
     h <- 1
-    while(q2[h] > lim){
+    while(!is.na(q2[h]) && q2[h] > lim){
       h <- h + 1
     }
     h.best.q2 <- max(h-1,1)
@@ -1412,4 +1412,5 @@ perf.sgPLSda <- function(object,
   #updated outputs
   return(invisible(result))
 }
+
 
