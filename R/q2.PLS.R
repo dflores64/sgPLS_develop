@@ -204,7 +204,7 @@ q2.PLS <- function(object, ncomp.max = object$ncomp, mode = "regression"){
   lim <- 0.0975
 
   h <- 1
-  while(q2[h] > lim){
+  while(!is.na(q2[h]) && q2[h] > lim){
     h <- h + 1
   }
   h.best <- max(h-1,1)
@@ -221,3 +221,4 @@ q2.PLS <- function(object, ncomp.max = object$ncomp, mode = "regression"){
   return(q2.pls.results)
   
 }
+
