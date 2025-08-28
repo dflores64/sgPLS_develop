@@ -25,8 +25,10 @@ perf.PLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("M
     K = folds
   }else{K = n}
   
-  if (progressBar == TRUE) pb <- txtProgressBar(style = 3)
-  setTxtProgressBar(pb,1)
+  if (progressBar == TRUE){
+    pb <- txtProgressBar(style = 3)
+    setTxtProgressBar(pb,1)
+  }
   cat('\n')
   
   b <- floor(n/K) # block size
@@ -1414,6 +1416,7 @@ perf.sgPLSda <- function(object,
   #updated outputs
   return(invisible(result))
 }
+
 
 
 
