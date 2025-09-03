@@ -14,7 +14,15 @@ msep.PLS <- function(object, ncomp = object$ncomp, K=nrow(object$X)){
   
   if(K < 2 || K > n){ stop(paste("K must be a value between 2 and",n))}
   
-  # prediction analysis
+  # MSEP TRAIN -----
+  
+  Y.pred <- predict(object, newdata = X, ncomp = ncomp)$predict
+  msep.train <- numeric(ncomp)
+  for(h in 1:ncomp){msep.train[h] <- sum(colSums((Y - Y.pred[,,h])**2))}
+  
+  # MSEP CV ------
+  
+  ## prediction analysis
   err <- matrix(NA, nrow = K, ncol = ncomp)
   
   b <- floor(n/K) # block size
@@ -41,11 +49,12 @@ msep.PLS <- function(object, ncomp = object$ncomp, K=nrow(object$X)){
       
     }
   }
-  err.moy <- colSums(err)/b/K
+  msep.cv <- colSums(err)/b/K
   
-  h.best <- min(which.min(err.moy))
-  plot(err.moy, col="blue", pch = 16, type = "b", main = "MSEP of the model", xlab = "number of components", ylab = "MSEP")
+  h.best <- min(which.min(msep.cv))
+  plot(msep.cv, col="blue", pch = 16, type = "b", main = "MSEP of the model", xlab = "number of components", ylab = "MSEP")
   #abline(h = (1:9)/10, lty = 3, col = "grey")
   
-  return(setNames(list(err.moy,h.best),c("MSEP","h.best")))
+  return(setNames(list(msep.train, msep.cv, h.best),c("MSEP.train","MSEP.cv","h.best")))
 }
+
