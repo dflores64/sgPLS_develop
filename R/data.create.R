@@ -14,16 +14,23 @@ data.create <- function(n = 40, p = 10, q = 1, list = TRUE){
 
 data.cl.create <- function(n = 40, p = 10, classes = 2, list = TRUE){
   
-  X <- matrix(nrow = n, ncol = p)
+  X <- matrix(data = rnorm(n*p),n,p)
+  B <- matrix(data = runif(p,-1,1), nrow = p, ncol = 1)
+  E <- matrix(data = rnorm(n, sd = 0.1),n,1)
+  Y0 <- X%*%B + E
   Y <- numeric(n)
-  for(i in seq_len(n)){
-    Y[i] <- sample(x = seq_len(classes), size = 1)
-    X[i,] <- rnorm(p) + Y[i] + rnorm(p, sd = 0.1)
+  
+  for(i in 1:n){
+    for(cl in 1:classes){
+      if(Y0[i] >= quantile(Y0, prob = (cl-1)/classes) && Y0[i] <= quantile(Y0, prob = cl/classes)){Y[i] <- cl}
+    }
   }
   
   if(p > 1){colnames(X) <- paste0(rep("X",p),1:p)}
   D <- data.frame(X,Y)
-  if(list){return(list(D = D,X = X,Y = Y,Y.f = as.factor(Y)))}else{return(D)}
+  
+  if(list){return(list(B = B,D = D,X = X,Y = Y))}else{return(D)}
+  
 }
 
 data.spls.create <- function(n = 100, p100 = 4, q100 = 5, list = TRUE){
@@ -76,3 +83,4 @@ data.spls.create <- function(n = 100, p100 = 4, q100 = 5, list = TRUE){
   if(list){return(list(D = D,X = X,Y = Y, ind.block.x = ind.block.x, ind.block.y =ind.block.y))}else{return(D)}
                
 }
+
