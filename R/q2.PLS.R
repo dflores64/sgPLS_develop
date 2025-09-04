@@ -1,4 +1,4 @@
-q2.PLS <- function(object, ncomp.max = object$ncomp, mode = "regression"){
+q2.PLS <- function(object, ncomp.max = object$ncomp, mode = "regression", plot = TRUE){
   
   X <- object$X
   Y <- object$Y
@@ -210,10 +210,12 @@ q2.PLS <- function(object, ncomp.max = object$ncomp, mode = "regression"){
   h.best <- max(h-1,1)
   
   # Plot
-  plot(q2, type = "b", col = "blue", pch = 16,
+  if(plot){
+    plot(q2, type = "b", col = "blue", pch = 16,
        main = "Model Q² performance",
        xlab = "Number of components", ylab = "Q²")
-  abline(h = lim, col = "red", lty = 2)
+    abline(h = lim, col = "red", lty = 2)
+  }
   
   suggestion <- paste("best number of components : H =",h.best)
   
@@ -221,4 +223,5 @@ q2.PLS <- function(object, ncomp.max = object$ncomp, mode = "regression"){
   return(q2.pls.results)
   
 }
+
 
