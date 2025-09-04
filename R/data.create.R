@@ -84,3 +84,4 @@ data.spls.create <- function(n = 100, p100 = 4, q100 = 5, list = TRUE){
                
 }
 
+
