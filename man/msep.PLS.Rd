@@ -23,12 +23,18 @@
 }
 
 \details{
+  A leave-one-out cross-validation is used by default.
+
   \eqn{K} must be a value between 2 and the the number of rows of the dataset used for training model.
   
   MSEP is defined by mean of squared error between the true \eqn{Y} values and their associated predictions.
 }
 
-
+\value{
+  \item{\code{MSEP.train}}{\eqn{MSEP} of the training set WITHOUT cross-validation}
+  \item{\code{MSEP.cv}}{\eqn{MSEP} of the training set WITH cross-validation}
+  \item{\code{h.best}}{Indice of the minimum \code{MSEP.cv}}
+}
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
@@ -50,5 +56,6 @@ model <- PLS(X,Y,ncomp = ncomp.max, mode = "regression")
 msep.res <- msep.PLS(model, ncomp = ncomp.max, K = n)
 msep.res$MSEP 
 msep.res$h.best #number of components suggestion 
+
 
 }
