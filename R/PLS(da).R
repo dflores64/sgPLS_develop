@@ -1,5 +1,5 @@
 # PLS function ----
-PLS <- function(X,Y,ncomp,mode){
+PLS <- function(X,Y,ncomp,mode = "regression"){
   X <- as.matrix(X)
   Y <- as.matrix(Y)
   q <- ncol(Y)
@@ -71,7 +71,7 @@ PLS <- function(X,Y,ncomp,mode){
   colnames(load.u) <- NULL
   colnames(load.v) <- NULL  
   cl = match.call()
-  result <- list(X = X.s, Y = Y.s, ncomp = ncomp, loadings = list(X = load.u, Y = load.v),variates = list(X = mat.t, Y = mat.u), mat.c = mat.c,mat.d=mat.d,mat.e=mat.e)
+  result <- list(X=X.s,Y=Y.s,ncomp=ncomp,loadings=list(X = load.u, Y = load.v),variates=list(X = mat.t, Y = mat.u),mat.c=mat.c,mat.d=mat.d,mat.e=mat.e,mode=mode)
   class(result) = c("sPLS", "spls","pls")
   return(invisible(result))
   
@@ -101,3 +101,4 @@ PLSda <- function(X,Y,ncomp = 2){
   class(result) = c("sPLSda","splsda","plsda")
   return(invisible(result))	
 }
+
