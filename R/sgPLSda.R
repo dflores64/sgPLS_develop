@@ -23,7 +23,7 @@ function(X,
     cl = match.call()
     cl[[1]] = as.name('sgPLSda')
     result$call = cl
-	 
+	result$Y = Y
     result$ind.mat = ind.mat
     result$names$Y = levels(Y)
     
