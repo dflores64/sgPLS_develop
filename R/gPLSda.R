@@ -23,7 +23,7 @@ gPLSda <-
     cl = match.call()
     cl[[1]] = as.name('gPLSda')
     result$call = cl
-    
+    result$Y = Y
     result$ind.mat = ind.mat
     result$names$Y = levels(Y)
     
