@@ -94,11 +94,12 @@ PLSda <- function(X,Y,ncomp = 2){
   cl = match.call()
   cl[[1]] = as.name('PLSda')
   result$call = cl
-  
+  result$Y = Y
   result$ind.mat = ind.mat
   result$names$Y = levels(Y)
   
   class(result) = c("sPLSda","splsda","plsda")
   return(invisible(result))	
 }
+
 
