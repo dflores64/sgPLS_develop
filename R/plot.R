@@ -24,16 +24,22 @@ plot.indiv <- function(object, compX = c(1,2), compY = NULL){
   
   # PLS/PLSda condition 
   if(class.obj[3] == "plsda"){
-    colour <- Y
-    data$group <- Y
-  }else{
-    colour <- "black"
+    Y <- map(Y)
+    Classes <- data$class <- as.factor(Y)
+    graphX <- ggplot(mat.t, aes(t1,t2, colour = Classes)) + geom_point() + 
+      stat_ellipse(level = 0.95, type = "norm") +
+      labs(x = paste("X-variate",compX1), y = paste("X-variate ",compX2)) + 
+      geom_text(aes(label = 1:n), vjust = -1) +
+      ggtitle("Individuals projected on X latent variables") +
+      theme(plot.title = element_text(hjust = 0.5))
     
+  }else{
+    graphX <- ggplot(mat.t, aes(t1,t2)) + geom_point(colour = "blue") + 
+      labs(x = paste("X-variate",compX1), y = paste("X-variate ",compX2)) + 
+      geom_text(aes(label = 1:n), vjust = -1) +
+      ggtitle("Individuals projected on X latent variables") +
+      theme(plot.title = element_text(hjust = 0.5))
   }
-  
-  graphX <- ggplot(mat.t, aes(t1,t2)) + geom_point(colour = colour) + 
-    labs(title = "Individuals projected over latent variables", x = paste("X-variate",compX1), y = paste("X-variate ",compX2)) + 
-    geom_text(aes(label = 1:n), vjust = -1)
   
   # case of compY input and PLS
   if(!is.null(compY) && class.obj[3] == "pls"){
@@ -55,9 +61,11 @@ plot.indiv <- function(object, compX = c(1,2), compY = NULL){
     s2.name <- paste("Y-variate",compY2)
     colnames(data) <- c(t1.name,t2.name,s1.name,s2.name)
     
-    graphY <- ggplot(mat.t, aes(s1,s2)) + geom_point() + 
-      labs(title = "Individuals projected over latent variables", x = paste("Y-variate",compY1), y = paste("Y-variate ",compY2)) + 
-      geom_text(aes(label = 1:n), vjust = -1)
+    graphY <- ggplot(mat.t, aes(s1,s2)) + geom_point(colour = "blue") + 
+      labs(x = paste("Y-variate",compY1), y = paste("Y-variate ",compY2)) + 
+      geom_text(aes(label = 1:n), vjust = -1) +
+      ggtitle("Individuals projected on Y latent variables") +
+      theme(plot.title = element_text(hjust = 0.5))
     
     return(list(data = data, graphX = graphX, graphY = graphY))
   }else{return(list(data = data, graphX = graphX))}
