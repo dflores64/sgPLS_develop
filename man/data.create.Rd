@@ -1,7 +1,3 @@
-\name{data.create}
-\alias{data.create}
-\alias{data.cl.create}
-
 \title{
 Dataset simulation
 }
@@ -12,15 +8,16 @@ These functions allow to generate a dataset with linear dependance between \eqn{
 
 
 \usage{
-data.create(n = 40, p = 10, q = 1, list = TRUE)
-data.cl.create(n = 40, p = 10, classes = 2, list = TRUE)
+data.create(n = 40, p = 10, q = 1, seed = NULL, list = TRUE)
+data.cl.create(n = 40, p = 10, classes = 2, seed = NULL, list = TRUE)
 }
 
 \arguments{
-  \item{n}{number of dataset rows}
-  \item{p}{number of \eqn{X} variables}
-  \item{q}{number of \eqn{Y} variables with \code{data.create} function} 
-  \item{classes}{number of classes to generate with \code{data.cl.create} function}
+  \item{n}{Number of dataset rows.}
+  \item{p}{Number of \eqn{X} variables.}
+  \item{q}{Number of \eqn{Y} variables with \code{data.create} function.} 
+  \item{classes}{Number of classes to generate with \code{data.cl.create} function}
+  \item{seed}{Uses \code{set.seed} function to generate data.}
   \item{list}{By default, returns a list including the dataframe. If the argument \code{list} is set to \code{FALSE}, a dataframe is returned.}
 }
 
@@ -28,12 +25,11 @@ data.cl.create(n = 40, p = 10, classes = 2, list = TRUE)
 By default, the population is set to \eqn{n=40} which is close to actual conditions. In this case, we have 
 \eqn{p<n}. 
 
-With \code{data.create} function, \eqn{Y} is a linear combinaison from each gaussian variable \eqn{X_j} of \eqn{X}.
+\eqn{Y} is a linear combinaison from each gaussian variable \eqn{X_j} of \eqn{X}.
 Indeed, the function includes a matrix product to compute the response : \eqn{Y = XB+E} with \eqn{B} the weight (coefficients) matrix and \eqn{E} matrix the gaussian noise.
 \eqn{B} matrix can be found in the list returned by the function (if \code{list = TRUE}).
 
-With \code{data.cl.create} function, there is a link between \eqn{X} and the classes of \eqn{Y}.
-The list returns also \code{Y.f} an other version of \code{Y} but from factor class.
+With \code{data.cl.create} function, \code{Y} object returned is a factor class.
 }
 
 
