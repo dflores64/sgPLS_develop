@@ -15,7 +15,7 @@ data.create <- function(n = 40, p = 10, q = 1, seed = NULL, list = TRUE){
 }
 
 
-data.cl.create <- function(n = 40, p = 10, classes = 2, seed = NULL, list = TRUE){
+data.cl.create <- function(n = 40, p = 10, classes = 2, list = TRUE, seed = NULL){
   
   if(!is.null(seed)){set.seed(seed)}
   
@@ -34,7 +34,7 @@ data.cl.create <- function(n = 40, p = 10, classes = 2, seed = NULL, list = TRUE
   if(p > 1){colnames(X) <- paste0(rep("X",p),1:p)}
   D <- data.frame(X,Y)
   
-  if(list){return(list(B = B,D = D,X = X,Y = Y,Y.f = as.factor(Y)))}else{return(D)}
+  if(list){return(list(B = B,D = D,X = X,Y = as.factor(Y)))}else{return(D)}
   
 }
 
@@ -88,6 +88,7 @@ data.spls.create <- function(n = 100, p100 = 4, q100 = 5, list = TRUE){
   if(list){return(list(D = D,X = X,Y = Y, ind.block.x = ind.block.x, ind.block.y =ind.block.y))}else{return(D)}
                
 }
+
 
 
 
