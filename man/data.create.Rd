@@ -1,11 +1,15 @@
+\name{data.create}
+\alias{data.create}
+\alias{data.cl.create}
+
 \title{
 Dataset simulation
 }
+
 \description{
 These functions allow to generate a dataset with linear dependance between \eqn{Y} and \eqn{X}.
 \code{data.create} is used for quantitative response while \code{data.cl.create} is used for qualitative response.
 }
-
 
 \usage{
 data.create(n = 40, p = 10, q = 1, seed = NULL, list = TRUE)
@@ -46,3 +50,4 @@ data.cl <- data.cl.create(n = 20, p = 5, classes = 3, list = TRUE)
 X <- data.cl$X
 Y <- data.cl$Y
 }
+
