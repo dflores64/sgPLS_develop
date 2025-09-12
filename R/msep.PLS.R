@@ -1,6 +1,6 @@
 # msep.PLS function ------
 
-msep.PLS <- function(object, ncomp = object$ncomp, K=nrow(object$X)){
+msep.PLS <- function(object, ncomp = object$ncomp, K=nrow(object$X), plot = TRUE){
   
   X <- object$X
   Y <- object$Y
@@ -52,9 +52,13 @@ msep.PLS <- function(object, ncomp = object$ncomp, K=nrow(object$X)){
   msep.cv <- colSums(err)/b/K
   
   h.best <- min(which.min(msep.cv))
-  plot(msep.cv, col="blue", pch = 16, type = "b", main = "MSEP of the model", xlab = "number of components", ylab = "MSEP")
-  #abline(h = (1:9)/10, lty = 3, col = "grey")
+  if(plot){
+    plot(msep.cv, col="blue", pch = 16, type = "b", main = "MSEP of the model", xlab = "number of components", ylab = "MSEP", axes = FALSE)
+    axis(1, at = 1:ncomp)
+    axis(2, labels = TRUE)
+  }
   
   return(setNames(list(msep.train, msep.cv, h.best),c("MSEP.train","MSEP.cv","h.best")))
 }
+
 
