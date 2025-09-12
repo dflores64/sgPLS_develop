@@ -20,6 +20,7 @@
   \item{object}{Object of class inheriting from "pls".}
   \item{ncomp}{The number of components desired for MSEP computing (no more than the number of components computed in the model).}
   \item{K}{The number of blocks for cross-validation (leave-one-out by default).}
+  \item{plot}{Boolean indicating if a plot must be output or not}
 }
 
 \details{
@@ -28,6 +29,8 @@
   \eqn{K} must be a value between 2 and the the number of rows of the dataset used for training model.
   
   MSEP is defined by mean of squared error between the true \eqn{Y} values and their associated predictions.
+
+  If \code{plot = TRUE}, the plot displays a curve of the $Q^2$ values.
 }
 
 \value{
@@ -59,3 +62,4 @@ msep.res$h.best #number of components suggestion
 
 
 }
+
