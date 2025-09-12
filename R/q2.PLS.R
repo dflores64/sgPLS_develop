@@ -213,7 +213,7 @@ q2.PLS <- function(object, ncomp = object$ncomp, mode = "regression", plot = TRU
   # Plot
   if(plot){
     plot(q2, type = "b", col = "blue", pch = 16,
-       main = "Model Q² performance",
+       main = "Q² of the model",
        xlab = "Number of components", ylab = "Q²", axes = FALSE)
     abline(h = lim, col = "red", lty = 2)
     axis(1, at = 1:ncomp)
@@ -226,6 +226,7 @@ q2.PLS <- function(object, ncomp = object$ncomp, mode = "regression", plot = TRU
   return(q2.pls.results)
   
 }
+
 
 
 
