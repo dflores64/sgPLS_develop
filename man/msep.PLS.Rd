@@ -13,7 +13,7 @@
 }
 
 \usage{
-  msep.PLS(object, ncomp = object$ncomp, K=nrow(object$X))
+  msep.PLS(object, ncomp = object$ncomp, K=nrow(object$X), plot = TRUE)
 }
 
 \arguments{
@@ -62,4 +62,5 @@ msep.res$h.best #number of components suggestion
 
 
 }
+
 
