@@ -64,7 +64,7 @@ perf.PLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("M
     
     h.best.msep <- min(which.min(err.moy))
     if(plot){
-      plot(err.moy, col="blue", pch = 16, type = "b", main = "MSEP of the model", xlab = "number of components", ylab = "MSEP", axes = FALSE)
+      plot(err.moy, col="blue", pch = 16, type = "b", main = "Model MSEP", xlab = "number of components", ylab = "MSEP", axes = FALSE)
       axis(1, at = 1:ncomp)
       axis(2, labels = TRUE)
     }
@@ -184,7 +184,7 @@ perf.PLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("M
     # Plot
     if(plot){
       plot(q2, type = "b", col = "blue", pch = 16,
-           main = "Q² of the model",
+           main = "Model Q²",
            xlab = "Number of components", ylab = "Q²", axes = FALSE)
       abline(h = lim, col = "red", lty = 2)
       axis(1, at = 1:ncomp)
@@ -1483,6 +1483,7 @@ perf.sgPLSda <- function(object,
   #updated outputs
   return(invisible(result))
 }
+
 
 
 
