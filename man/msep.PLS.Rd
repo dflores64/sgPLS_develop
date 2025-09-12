@@ -30,7 +30,7 @@
   
   MSEP is defined by mean of squared error between the true \eqn{Y} values and their associated predictions.
 
-  If \code{plot = TRUE}, the plot displays a curve of the $Q^2$ values.
+  If \code{plot = TRUE}, the plot displays a curve of the MSEP values.
 }
 
 \value{
@@ -62,5 +62,6 @@ msep.res$h.best #number of components suggestion
 
 
 }
+
 
 
