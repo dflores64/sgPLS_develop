@@ -1,4 +1,4 @@
-\name{q2.PLS_doc}
+\name{q2.PLS}
 \alias{q2.PLS}
 
 \title{
@@ -11,19 +11,22 @@ A plot allows to visualize the model performance according to the number of comp
 }
 
 \usage{
-q2.PLS(object, ncomp = object$ncomp, mode = "regression")
+q2.PLS(object, ncomp = object$ncomp, mode = "regression", plot = TRUE)
 }
 
 \arguments{
   \item{object}{Object of class inheriting from \code{"pls"}.}
   \item{ncomp}{The number of components desired for q2 computing (no more than the number of components computed in the model).}
   \item{mode}{Character string. What type of algorithm to use, (partially) matching one of "regression" or "canonical".}
+  \item{plot}{Boolean indicating if a plot must be output or not}
 }
 
 \details{
   A suggestion about the number of components selection is also given by Q2 criterion.
 Endly, other indicators are given such as PRESS and RSS for each number of components 
 and such as \eqn{PRESSj} and \eqn{RSSj} (matrices) for a given number of components and for a given column of Y dataset.
+
+If \code{plot = TRUE}, the plot displays a curve of the Q2 values.
 }
 
 \value{
@@ -71,3 +74,4 @@ q2.res$PRESSj
 #q2.res$RSSj
 
 }
+
