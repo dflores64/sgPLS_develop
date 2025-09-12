@@ -5,7 +5,7 @@
 # perf.PLS function -----
 
 perf.PLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("Mfold","loo"),
-                     folds = 10, ncomp = object$ncomp, progressBar = TRUE){
+                     folds = 10, ncomp = object$ncomp, progressBar = TRUE, plot = TRUE){
   
   X <- object$X
   Y <- object$Y
@@ -25,10 +25,8 @@ perf.PLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("M
     K = folds
   }else{K = n}
   
-  if (progressBar == TRUE){
-    pb <- txtProgressBar(style = 3)
-    setTxtProgressBar(pb,1)
-  }
+  if (progressBar == TRUE) pb <- txtProgressBar(style = 3)
+  setTxtProgressBar(pb,1)
   cat('\n')
   
   b <- floor(n/K) # block size
@@ -65,14 +63,15 @@ perf.PLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("M
     err.moy <- colSums(err)/b/K
     
     h.best.msep <- min(which.min(err.moy))
-    plot(err.moy, col="blue", pch = 16, type = "b", main = "MSEP of the model", xlab = "number of components", ylab = "MSEP")
+    if(plot){
+      plot(err.moy, col="blue", pch = 16, type = "b", main = "MSEP of the model", xlab = "number of components", ylab = "MSEP", axes = FALSE)
+      axis(1, at = 1:ncomp)
+      axis(2, labels = TRUE)
+    }
     
     res$MSEP <- err.moy
     res$h.best.msep <- h.best.msep
-    
-    #return(res)
-    #return(setNames(list(err.moy,h.best.msep),c("MSEP","h.best.msep")))
-    
+
   }
   
   if(any(criterion %in% c("all","Q2"))){
@@ -183,10 +182,14 @@ perf.PLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("M
     h.best.q2 <- max(h-1,1)
     
     # Plot
-    plot(q2, type = "b", col = "blue", pch = 16,
-         main = "Model Q² performance",
-         xlab = "Number of components", ylab = "Q²")
-    abline(h = lim, col = "red", lty = 2)
+    if(plot){
+      plot(q2, type = "b", col = "blue", pch = 16,
+           main = "Q² of the model",
+           xlab = "Number of components", ylab = "Q²", axes = FALSE)
+      abline(h = lim, col = "red", lty = 2)
+      axis(1, at = 1:ncomp)
+      axis(2, labels = TRUE)
+    }
     
     res$q2 <- q2
     res$PRESS = PRESS
@@ -1480,6 +1483,7 @@ perf.sgPLSda <- function(object,
   #updated outputs
   return(invisible(result))
 }
+
 
 
 
