@@ -53,12 +53,13 @@ msep.PLS <- function(object, ncomp = object$ncomp, K=nrow(object$X), plot = TRUE
   
   h.best <- min(which.min(msep.cv))
   if(plot){
-    plot(msep.cv, col="blue", pch = 16, type = "b", main = "MSEP of the model", xlab = "number of components", ylab = "MSEP", axes = FALSE)
+    plot(msep.cv, col="blue", pch = 16, type = "b", main = "Model MSEP", xlab = "number of components", ylab = "MSEP", axes = FALSE)
     axis(1, at = 1:ncomp)
     axis(2, labels = TRUE)
   }
   
   return(setNames(list(msep.train, msep.cv, h.best),c("MSEP.train","MSEP.cv","h.best")))
 }
+
 
 
