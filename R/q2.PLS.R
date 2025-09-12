@@ -1,4 +1,4 @@
-q2.PLS <- function(object, ncomp.max = object$ncomp, mode = "regression", plot = TRUE){
+q2.PLS <- function(object, ncomp = object$ncomp, mode = "regression", plot = TRUE){
   
   X <- object$X
   Y <- object$Y
@@ -8,6 +8,7 @@ q2.PLS <- function(object, ncomp.max = object$ncomp, mode = "regression", plot =
   p <- ncol(X)
   q <- ncol(Y)
   ncomp.object <- object$ncomp
+  ncomp.max = ncomp
   
   # conditions check-up
   if(!("pls" %in% class(object)) && class(object) != "mixo_pls"){ stop("object class must either contain pls class or be mixo_pls class."); print(class(object))}
@@ -213,8 +214,10 @@ q2.PLS <- function(object, ncomp.max = object$ncomp, mode = "regression", plot =
   if(plot){
     plot(q2, type = "b", col = "blue", pch = 16,
        main = "Model Q² performance",
-       xlab = "Number of components", ylab = "Q²")
+       xlab = "Number of components", ylab = "Q²", axes = FALSE)
     abline(h = lim, col = "red", lty = 2)
+    axis(1, at = 1:ncomp)
+    axis(2, labels = TRUE)
   }
   
   suggestion <- paste("best number of components : H =",h.best)
@@ -223,5 +226,6 @@ q2.PLS <- function(object, ncomp.max = object$ncomp, mode = "regression", plot =
   return(q2.pls.results)
   
 }
+
 
 
