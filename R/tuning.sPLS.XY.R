@@ -16,7 +16,7 @@ tuning.sPLS.XY <- function(X,Y,folds=10,validation=c("Mfold","loo"), ncomp = nco
   # PART 1 : number of components selection
   
   model <- sPLS(X,Y,ncomp = ncomp)
-  perf <- perf2.sPLS(model, criterion = "MSEP")
+  perf <- perf.sPLS(model, criterion = "MSEP")
   err.moy <- colSums(perf$MSEP)
   h.best <- which.min(err.moy)
   
@@ -207,3 +207,4 @@ tuning0.sPLS.XY <- function(object, K=nrow(object$X), ncomp = object$ncomp){
   
   
 }
+
