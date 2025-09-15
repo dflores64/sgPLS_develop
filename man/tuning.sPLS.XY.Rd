@@ -8,7 +8,7 @@ Tuning of the parameters for sPLS models
 This function calculate the best number of components and the best number of variables to select for sPLS models.
 }
 \usage{
-tuning.sPLS.XY(X,Y,folds=10,validation=c("Mfold","loo"), ncomp = ncol(X))
+tuning.sPLS.XY(X,Y,folds=10,validation=c("Mfold","loo"), ncomp = ncol(X), progressBar = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -17,6 +17,7 @@ tuning.sPLS.XY(X,Y,folds=10,validation=c("Mfold","loo"), ncomp = ncol(X))
   \item{validation}{Character. What kind of (internal) validation to use, matching one of "Mfold" or "loo". Default is "Mfold".}
   \item{folds}{The folds in the Mfold cross-validation.}
   \item{ncomp}{The number of components}
+  \item{progressBar}{By default set to \code{TRUE} to output the progress bar of the computation.}
 }
 
 \details{
@@ -61,4 +62,5 @@ Y <- data$Y
 
 # tuning
 perf.res <- tuning.sPLS.XY(X,Y,ncomp = ncomp.max)
+
 }
