@@ -210,7 +210,221 @@ perf.PLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("M
 # perf for sPLS object ----
 # ---------------------------------------------------
 
-perf.sPLS <-
+perf.sPLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("Mfold","loo"),
+                     folds = 10, ncomp = object$ncomp, progressBar = TRUE, plot = TRUE){
+  
+  X <- object$X
+  Y <- object$Y
+  c <- object$mat.c
+  d <- object$mat.d
+  n <- nrow(X)
+  p <- ncol(X)
+  q <- ncol(Y)
+  
+  # sPLS model attributes
+  tol <- object$tol
+  max.iter <- object$max.iter
+  keepX <- object$keepX   
+  keepY <- object$keepY   
+  
+  # conditions about sPLS model attributes
+  if(is.null(tol)){tol = 10^(-6)}
+  if(is.null(max.iter)){max.iter = 500}
+  if(is.null(keepX)){keepX = rep(ncol(X),ncomp)}
+  if(is.null(keepY)){keepY = rep(ncol(Y),ncomp)}
+  
+  # others conditions check-up
+  if(!("pls" %in% class(object)) && class(object) != "mixo_pls"){ stop("object class must either contain pls class or be mixo_pls class."); print(class(object))}
+  
+  if(ncomp > object$ncomp || ncomp <= 0){ stop(paste("ncomp.max must be a value between 0 and",object$ncomp,"which is the total number of components computed in the object model."))}
+  
+  if(validation[1] == "Mfold"){
+    if(folds < 2 || folds > n){ stop(paste("folds must be a value between 2 and",n))}
+    K = folds
+  }else{K = n}
+  
+  if (progressBar == TRUE) pb <- txtProgressBar(style = 3)
+  setTxtProgressBar(pb,1)
+  cat('\n')
+  
+  b <- floor(n/K) # block size
+  ind <- 1:n
+  res = list()
+  
+  # MSEP CRITERION
+  if(any(criterion %in% c("all","MSEP"))){
+    
+    # prediction analysis
+    err <- matrix(NA, nrow = K, ncol = ncomp)
+    
+    for(k in seq_len(K)){
+      
+      # bloc definition
+      ind.beg <- (k-1) * b + 1 # block k beginning
+      ind.end <- k * b # block k end
+      ind.test <- ind[ind.beg:ind.end]
+      nk <- length(ind.test)
+      X.train <- X[-ind.test,]
+      Y.train <- Y[-ind.test,]
+      X.test <- X[ind.test,]
+      Y.test <- Y[ind.test,]
+      modele <- sPLS(X = X.train, Y = Y.train, ncomp = ncomp, mode = "regression", keepX = keepX, keepY = keepY, tol = tol, max.iter = max.iter)  
+      
+      for(h in 1:ncomp){  
+        
+        # predictions
+        pred <- predict.PLS(modele, newdata = X.test)$predict[,,h];print(pred)
+        err[k,h] <- sum(colSums(as.matrix((Y.test - pred)^2)))
+        
+      }
+    }
+    err.moy <- colSums(err)/b/K
+    
+    h.best.msep <- min(which.min(err.moy))
+    if(plot){
+      plot(err.moy, col="blue", pch = 16, type = "b", main = "MSEP of the model", xlab = "number of components", ylab = "MSEP", axes = FALSE)
+      axis(1, at = 1:ncomp)
+      axis(2, labels = TRUE)
+    }
+    
+    res$MSEP <- err.moy
+    res$h.best.msep <- h.best.msep
+    
+  }
+  
+  if(any(criterion %in% c("all","Q2"))){
+    
+    q2 <- numeric(ncomp)
+    PRESS <- numeric(ncomp)
+    RSS <- numeric(ncomp)
+    
+    RSSj <- matrix(nrow = ncomp, ncol = q)
+    PRESSj <- matrix(nrow = ncomp, ncol = q)
+    
+    # RSS0 computing
+    Y.mean <- t(matrix(colMeans(Y), nrow = q, ncol = n)) # mean for each column
+    RSS0 <- sum(colSums((Y-Y.mean)^2))
+    
+    
+    Y_test <- list()
+    Y_test[[1]] <- Y
+    
+    for(h in 1:ncomp){
+      Y_test[[h+1]] <- matrix(nrow = n, ncol = q)
+    }
+    
+    for(k in seq_len(K)){
+      
+      # bloc definition
+      ind.beg <- (k-1) * b + 1 # block k beginning
+      ind.end <- k * b # block k end
+      ind.test <- ind[ind.beg:ind.end]
+      nk <- length(ind.test)
+      X_train <- X[-ind.test,, drop = FALSE]
+      Y_train <- Y[-ind.test,, drop = FALSE]
+      
+      #Y.test <- Y[ind.test,]
+      
+      
+      # Center and scale training data
+      X_train_scaled <- scale(X_train, center = TRUE, scale = TRUE)
+      Y_train_scaled <- scale(Y_train, center = TRUE, scale = TRUE)
+      
+      X_means <- apply(X_train,2,mean)
+      X_sds <- apply(X_train,2,sd)
+      Y_means <- apply(Y_train,2,mean)
+      Y_sds <- apply(Y_train,2,sd)
+      
+      
+      X_test <- X[ind.test,]
+      X_test_scaled <- (X_test - X_means) / X_sds
+      
+      for(h in 1:ncomp){
+        
+        # training on the dataset without the ith individual
+        model <- sPLS(X = X_train_scaled, Y = Y_train_scaled, ncomp = 1, mode = "regression", keepX = keepX, keepY = keepY, tol = tol, max.iter = max.iter)
+        
+        # predictions on the ith individual
+        Y_pred <- predict.PLS(model, newdata = X_test_scaled)$predict[,,1]
+        Y_pred <- Y_pred * Y_sds + Y_means
+        
+        # deflation matrices
+        ui <- model$loadings$X[,1]
+        vi <- model$loadings$Y[,1]
+        res.deflat <- step2.spls(X=X_train_scaled,Y=Y_train_scaled,ui,vi,mode="regression")
+        X_train_scaled = res.deflat$X.h
+        Y_train_scaled = res.deflat$Y.h
+        Y_test[[h+1]][ind.test,] <- Y_test[[h]][ind.test,] - Y_pred
+        
+      }
+      
+    }
+    
+    for(h in 1:ncomp){
+      
+      # deflation matrices
+      u <- object$loadings$X[,h]
+      v <- object$loadings$Y[,h]
+      res.deflat <- step2.spls(X=X,Y=Y,u,v,mode="regression")
+      X = res.deflat$X.h
+      Y = res.deflat$Y.h
+      
+      for(j in 1:q){
+        RSSj[h,j] <- sum((Y[,j])^2)
+        PRESSj[h,j] <- sum((Y_test[[h+1]][,j])^2)
+      }
+      colnames(RSSj) <- paste0("Y",1:q)
+      colnames(PRESSj) <- paste0("Y",1:q)
+      
+      # RSS computing
+      RSS[h] <- sum(RSSj[h,]) 
+      
+      # PRESSh computing
+      PRESS[h] <- sum(PRESSj[h,]) 
+      
+      # Q2
+      q2[h] <- 1-PRESS[h]/RSS[max(h-1,1)]
+      
+      
+    }# end h loop
+    
+    # first value correction 
+    q2[1] <- 1-PRESS[1]/RSS0
+    
+    lim <- 0.0975
+    
+    h <- 1
+    while(!is.na(q2[h]) && q2[h] > lim){
+      h <- h + 1
+    }
+    h.best.q2 <- max(h-1,1)
+    
+    # Plot
+    if(plot){
+      plot(q2, type = "b", col = "blue", pch = 16,
+           main = "Model Q² performance",
+           xlab = "Number of components", ylab = "Q²", axes = FALSE)
+      abline(h = lim, col = "red", lty = 2)
+      axis(1, at = 1:ncomp)
+      axis(2, labels = TRUE)
+    }
+    
+    res$q2 <- q2
+    res$PRESS = PRESS
+    res$RSS = RSS
+    res$PRESSj = PRESSj
+    res$RSSj = RSSj
+    res$h.best.q2 = h.best.q2
+    
+    #return(res)
+    
+  } # end criterion loop
+  
+  return(res)
+  
+}
+
+perf0.sPLS <-
   function(object,
            criterion = c("all","MSEP", "R2", "Q2"), 
            validation = c("Mfold", "loo"),
@@ -1483,6 +1697,7 @@ perf.sgPLSda <- function(object,
   #updated outputs
   return(invisible(result))
 }
+
 
 
 
