@@ -17,7 +17,7 @@ tuning.sPLS.XY <- function(X,Y,folds=10,validation=c("Mfold","loo"), ncomp = nco
   
   model <- sPLS(X,Y,ncomp = ncomp)
   perf <- perf.sPLS(model, criterion = "MSEP", progressBar = progressBar)
-  err.moy <- colSums(perf$MSEP)
+  err.moy <- perf$MSEP
   h.best <- which.min(err.moy)
   
   par(mfrow = c(1,2))
@@ -96,3 +96,4 @@ tuning.sPLS.XY <- function(X,Y,folds=10,validation=c("Mfold","loo"), ncomp = nco
   return(setNames(list(err.moy,h.best,err.moy2,keepX.best,keepY.best),c("MSEP.h","h.best","MSEP.q.p","keepX.best","keepY.best")))
  
 }
+
