@@ -8,16 +8,14 @@ Population projection on others dimension
 This function displays scatterplot of the population (dataset individuals) projected on dimensions selected in parameters.
 }
 \usage{
-plot.indiv(object, compX = c(1,2), compY = NULL)
+plot.indiv(object, compX = c(1,2), compY = NULL, ellipse.plsda = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{object}{Object of class inheriting from "sPLS", "gPLS", "sgPLS", "sPLSda", "gPLSda" or "sgPLSda". The function will retrieve some key parameters stored in that object.}
   \item{compX}{The X components on what the population is projected.}
   \item{compY}{The Y components on what the population is projected (available only for regression).}
-}
-\details{
-In the case of PLSDA, the scatterplot is accompanied by ellipses circling each point group.
+  \item{ellipse.plsda}{Displays ellipses circling each point group if \code{ellipse.plsda = TRUE} (available only for classification)}
 }
 \value{
   \item{data}{gives the latentes variables selected in parameters (in other words, the point coordinates).}
@@ -60,3 +58,4 @@ pop.model.plsda <- plot.indiv(model.plsda, compX = c(5,4))
 % \concept{ ~cpt1 }
 % \concept{ ~cpt2 }
 % Use only one concept per line.
+
