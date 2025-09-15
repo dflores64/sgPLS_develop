@@ -85,7 +85,7 @@ tuning.sPLS.XY <- function(X,Y,folds=10,validation=c("Mfold","loo"), ncomp = nco
     plot(as.vector(err.moy2), col="darkorange", pch = 16, type = "b", main = "MSEP of the model", ylab = "MSEP", xlab = "Number of variables selected in X (keepX)")
   }else{
     plot(0, main = "MSEP of the model", xlim = c(xmin,xmax), ylim = c(ymin,ymax), ylab = "Number of variables selected in Y (keepY)", xlab = "Number of variables selected in X (keepX)")
-    text(gl(p,q), rep(1:q,p), labels = as.vector(round.err), col = (round.err==min(round.err))+1)
+    text(gl(p,q), rep(1:q,p), labels = as.vector(round.err), col = (err.moy2==min(err.moy2))+1)
     abline(v = xmin:xmax, h = ymin:ymax, lty = 3, col = "yellow")
   }
   
@@ -207,4 +207,5 @@ tuning0.sPLS.XY <- function(object, K=nrow(object$X), ncomp = object$ncomp){
   
   
 }
+
 
