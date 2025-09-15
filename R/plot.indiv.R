@@ -55,8 +55,8 @@ plot.indiv <- function(object, compX = c(1,2), compY = NULL, ellipse.plsda = TRU
     if(compY1 > ncomp || compY2 > ncomp){stop("compY elements mustn't exceed ncomp.")}
 
     mat.s <- as.data.frame(object$variates$Y)
-    s1 <- mat.t[,compY1]
-    s2 <- mat.t[,compY2]
+    s1 <- mat.s[,compY1]
+    s2 <- mat.s[,compY2]
     
     data <- data.frame(t1,t2,s1,s2)
     s1.name <- paste("Y-variate",compY1)
@@ -72,4 +72,5 @@ plot.indiv <- function(object, compX = c(1,2), compY = NULL, ellipse.plsda = TRU
     return(list(data = data, graphX = graphX, graphY = graphY))
   }else{return(list(data = data, graphX = graphX))}
   
+
 }
