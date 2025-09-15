@@ -277,7 +277,7 @@ perf.sPLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("
       for(h in 1:ncomp){  
         
         # predictions
-        pred <- predict.PLS(modele, newdata = X.test)$predict[,,h];print(pred)
+        pred <- predict.PLS(modele, newdata = X.test)$predict[,,h]
         err[k,h] <- sum(colSums(as.matrix((Y.test - pred)^2)))
         
       }
@@ -1701,6 +1701,7 @@ perf.sgPLSda <- function(object,
   #updated outputs
   return(invisible(result))
 }
+
 
 
 
