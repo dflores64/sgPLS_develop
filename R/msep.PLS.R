@@ -6,6 +6,7 @@ msep.PLS <- function(object, ncomp = object$ncomp, K=nrow(object$X), plot = TRUE
   Y <- object$Y
   n <- nrow(X)
   p <- ncol(X)
+  q <- ncol(Y)
   
   # conditions check-up
   if(!("pls" %in% class(object)) && class(object) != "mixo_pls"){ stop("object class must either contain pls class or be mixo_pls class."); print(class(object))}
@@ -18,12 +19,21 @@ msep.PLS <- function(object, ncomp = object$ncomp, K=nrow(object$X), plot = TRUE
   
   Y.pred <- predict(object, newdata = X, ncomp = ncomp)$predict
   msep.train <- numeric(ncomp)
-  for(h in 1:ncomp){msep.train[h] <- sum(colSums((Y - Y.pred[,,h])**2))}
+  MSEP.train.j <- matrix(0, nrow = ncomp, ncol = q)
+  colnames(MSEP.train.j) <- paste0("Y",1:q)
+  rownames(MSEP.train.j) <- paste0("Comp",1:ncomp)
+  
+  for(h in 1:ncomp){
+    MSEP.train.j[h,] <- colMeans((Y - Y.pred[,,h])**2)
+    msep.train[h] <- mean(MSEP.train.j[h,])
+  }
   
   # MSEP CV ------
   
   ## prediction analysis
-  err <- matrix(NA, nrow = K, ncol = ncomp)
+  MSEP.cv.j <- matrix(0, nrow = ncomp, ncol = q)
+  colnames(MSEP.cv.j) <- paste0("Y",1:q)
+  rownames(MSEP.cv.j) <- paste0("Comp",1:ncomp)
   
   b <- floor(n/K) # block size
   ind <- sample(n)
@@ -45,21 +55,18 @@ msep.PLS <- function(object, ncomp = object$ncomp, K=nrow(object$X), plot = TRUE
       
       # predictions
       pred <- predict.PLS(modele, newdata = X.test)$predict[,,h]
-      err[k,h] <- sum(colSums(as.matrix((Y.test - pred)^2)))
+      MSEP.cv.j[h,] <- MSEP.cv.j[h,] + colMeans(as.matrix((Y.test - pred)^2))/K
       
     }
   }
-  msep.cv <- colSums(err)/b/K
+  msep.cv <- rowMeans(MSEP.cv.j)
   
   h.best <- min(which.min(msep.cv))
   if(plot){
-    plot(msep.cv, col="blue", pch = 16, type = "b", main = "Model MSEP", xlab = "number of components", ylab = "MSEP", axes = FALSE)
+    plot(msep.cv, col="blue", pch = 16, type = "b", main = "MSEP of the model", xlab = "number of components", ylab = "MSEP", axes = FALSE)
     axis(1, at = 1:ncomp)
     axis(2, labels = TRUE)
   }
   
-  return(setNames(list(msep.train, msep.cv, h.best),c("MSEP.train","MSEP.cv","h.best")))
+  return(setNames(list(msep.train, MSEP.train.j, msep.cv, MSEP.cv.j, h.best),c("MSEP.train","MSEP.train.j","MSEP.cv","MSEP.cv.j","h.best")))
 }
-
-
-
