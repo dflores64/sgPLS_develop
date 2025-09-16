@@ -12,7 +12,8 @@ tuning.gPLS.X <- function(X,Y,folds=10,validation=c("Mfold","loo"),ncomp,keepX=N
       res.perf.gpls <- try(perf(model.gpls,criterion="MSEP",validation=validation,folds = folds,setseed=choicesetseed,progressBar=progressBar),silent=FALSE)
       if (class(res.perf.gpls)[1]=="try-error"){ cond <- TRUE;choicesetseed=choicesetseed+1 } else {cond <- FALSE}
     }  
-    res[k] <- sum(res.perf.gpls$MSEP[,ncomp])
+    MSEP <- res.perf.gpls$MSEP
+    res[k] <- ifelse(is.matrix(MSEP),sum(MSEP[,ncomp]),MSEP[ncomp])
   }
   
   ind <- which.min(res)
