@@ -38,6 +38,9 @@ perf.PLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("M
     
     # prediction analysis
     err <- matrix(NA, nrow = K, ncol = ncomp)
+    MSEPj <- matrix(0, nrow = ncomp, ncol = q)
+    colnames(MSEPj) <- paste0("Y",1:q)
+    rownames(MSEPj) <- paste0("Comp",1:ncomp)
     
     for(k in seq_len(K)){
       
@@ -56,11 +59,11 @@ perf.PLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("M
         
         # predictions
         pred <- predict.PLS(modele, newdata = X.test)$predict[,,h]
-        err[k,h] <- sum(colSums(as.matrix((Y.test - pred)^2)))
+        MSEPj[h,] <- MSEPj[h,] + colMeans(as.matrix((Y.test - pred)^2))/K
         
       }
     }
-    err.moy <- colSums(err)/b/K
+    err.moy <- rowMeans(MSEPj)
     
     h.best.msep <- min(which.min(err.moy))
     if(plot){
@@ -70,6 +73,7 @@ perf.PLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("M
     }
     
     res$MSEP <- err.moy
+    res$MSEPj <- MSEPj
     res$h.best.msep <- h.best.msep
 
   }
@@ -436,12 +440,13 @@ perf0.sPLS <-
 # ---------------------------------------------------
 
 perf.sPLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("Mfold","loo"),
-                      folds = 10, ncomp = object$ncomp, progressBar = TRUE, setseed = 1, plot = FALSE){
+                      folds = 10, progressBar = TRUE, setseed = 1, plot = FALSE){
   
   X <- object$X
   Y <- object$Y
   c <- object$mat.c
   d <- object$mat.d
+  ncomp <- object$ncomp
   n <- nrow(X)
   p <- ncol(X)
   q <- ncol(Y)
@@ -460,8 +465,6 @@ perf.sPLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("
   
   # others conditions check-up
   if(!("pls" %in% class(object)) && class(object) != "mixo_pls"){ stop("object class must either contain pls class or be mixo_pls class."); print(class(object))}
-  
-  if(ncomp > object$ncomp || ncomp <= 0){ stop(paste("ncomp.max must be a value between 0 and",object$ncomp,"which is the total number of components computed in the object model."))}
   
   if(validation[1] == "Mfold"){
     if(folds < 2 || folds > n){ stop(paste("folds must be a value between 2 and",n))}
@@ -484,6 +487,9 @@ perf.sPLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("
     
     # prediction analysis
     err <- matrix(NA, nrow = K, ncol = ncomp)
+    MSEPj <- matrix(0, nrow = ncomp, ncol = q)
+    colnames(MSEPj) <- paste0("Y",1:q)
+    rownames(MSEPj) <- paste0("Comp",1:ncomp)
     
     for(k in seq_len(K)){
       
@@ -502,11 +508,11 @@ perf.sPLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("
         
         # predictions
         pred <- predict.PLS(modele, newdata = X.test)$predict[,,h]
-        err[k,h] <- sum(colSums(as.matrix((Y.test - pred)^2)))
+        MSEPj[h,] <- MSEPj[h,] + colMeans(as.matrix((Y.test - pred)^2))/K
         
       }
     }
-    err.moy <- colSums(err)/b/K
+    err.moy <- rowMeans(MSEPj)
     
     h.best.msep <- min(which.min(err.moy))
     if(plot){
@@ -516,6 +522,7 @@ perf.sPLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("
     }
     
     res$MSEP <- err.moy
+    res$MSEPj <- MSEPj
     res$h.best.msep <- h.best.msep
     
   }
@@ -886,12 +893,13 @@ perf0.gPLS <-
 # ---------------------------------------------------
 
 perf.gPLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("Mfold","loo"),
-                      folds = 10, ncomp = object$ncomp, progressBar = TRUE, setseed = 1, plot = FALSE){
+                      folds = 10, progressBar = TRUE, setseed = 1, plot = FALSE){
   
   X <- object$X
   Y <- object$Y
   c <- object$mat.c
   d <- object$mat.d
+  ncomp <- object$ncomp
   n <- nrow(X)
   p <- ncol(X)
   q <- ncol(Y)
@@ -914,8 +922,6 @@ perf.gPLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("
   # others conditions check-up
   if(!("pls" %in% class(object)) && class(object) != "mixo_pls"){ stop("object class must either contain pls class or be mixo_pls class."); print(class(object))}
   
-  if(ncomp > object$ncomp || ncomp <= 0){ stop(paste("ncomp.max must be a value between 0 and",object$ncomp,"which is the total number of components computed in the object model."))}
-  
   if(validation[1] == "Mfold"){
     if(folds < 2 || folds > n){ stop(paste("folds must be a value between 2 and",n))}
     K = folds
@@ -937,6 +943,9 @@ perf.gPLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("
     
     # prediction analysis
     err <- matrix(NA, nrow = K, ncol = ncomp)
+    MSEPj <- matrix(0, nrow = ncomp, ncol = q)
+    colnames(MSEPj) <- paste0("Y",1:q)
+    rownames(MSEPj) <- paste0("Comp",1:ncomp)
     
     for(k in seq_len(K)){
       
@@ -955,11 +964,11 @@ perf.gPLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("
         
         # predictions
         pred <- predict.PLS(modele, newdata = X.test)$predict[,,h]
-        err[k,h] <- sum(colSums(as.matrix((Y.test - pred)^2)))
+        MSEPj[h,] <- MSEPj[h,] + colMeans(as.matrix((Y.test - pred)^2))/K
         
       }
     }
-    err.moy <- colSums(err)/b/K
+    err.moy <- rowMeans(MSEPj)
     
     h.best.msep <- min(which.min(err.moy))
     if(plot){
@@ -969,6 +978,7 @@ perf.gPLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("
     }
     
     res$MSEP <- err.moy
+    res$MSEPj <- MSEPj
     res$h.best.msep <- h.best.msep
     
   }
@@ -1863,6 +1873,7 @@ perf.sgPLSda <- function(object,
   #updated outputs
   return(invisible(result))
 }
+
 
 
 
