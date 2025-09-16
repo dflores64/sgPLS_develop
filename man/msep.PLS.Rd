@@ -35,7 +35,9 @@
 
 \value{
   \item{\code{MSEP.train}}{\eqn{MSEP} of the training set WITHOUT cross-validation}
-  \item{\code{MSEP.cv}}{\eqn{MSEP} of the training set WITH cross-validation}
+  \item{\code{MSEP.train.j}}{\eqn{MSEP} of the training set BY variable WITHOUT cross-validation}
+  \item{\code{MSEP.cv}}{\eqn{MSEP} of the model set WITH cross-validation}
+  \item{\code{MSEP.cv.j}}{\eqn{MSEP} of the model set BY variable WITH cross-validation}
   \item{\code{h.best}}{Indice of the minimum \code{MSEP.cv}}
 }
 
@@ -62,6 +64,7 @@ msep.res$h.best #number of components suggestion
 
 
 }
+
 
 
 
