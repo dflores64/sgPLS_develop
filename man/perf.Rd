@@ -21,7 +21,7 @@ Function to evaluate the performance of the fitted sparse PLS, group PLS, sparse
 \method{perf}{PLS}(object, 
           criterion = c("all", "MSEP", "Q2"), 
           validation = c("Mfold", "loo"), 
-          folds = 10, ncomp = object$ncomp, progressBar = TRUE, setseed = 1, plot = FALSE, \ldots)           
+          folds = 10, progressBar = TRUE, setseed = 1, plot = FALSE, \ldots)           
 
 \method{perf}{sPLS}(object, 
           criterion = c("all", "MSEP", "R2", "Q2"), 
@@ -161,4 +161,5 @@ model.spls.loo.val$R2
 
 \keyword{regression}
 \keyword{multivariate}
+
 
