@@ -5,20 +5,19 @@
 # perf.PLS function -----
 
 perf.PLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("Mfold","loo"),
-                     folds = 10, ncomp = object$ncomp, progressBar = TRUE, setseed = 1, plot = FALSE){
+                     folds = 10, progressBar = TRUE, setseed = 1, plot = FALSE){
   
   X <- object$X
   Y <- object$Y
   c <- object$mat.c
   d <- object$mat.d
+  ncomp <- object$ncomp
   n <- nrow(X)
   p <- ncol(X)
   q <- ncol(Y)
   
   # conditions check-up
   if(!("pls" %in% class(object)) && class(object) != "mixo_pls"){ stop("object class must either contain pls class or be mixo_pls class."); print(class(object))}
-  
-  if(ncomp > object$ncomp || ncomp <= 0){ stop(paste("ncomp.max must be a value between 0 and",object$ncomp,"which is the total number of components computed in the object model."))}
 
   if(validation[1] == "Mfold"){
     if(folds < 2 || folds > n){ stop(paste("folds must be a value between 2 and",n))}
@@ -1864,6 +1863,7 @@ perf.sgPLSda <- function(object,
   #updated outputs
   return(invisible(result))
 }
+
 
 
 
