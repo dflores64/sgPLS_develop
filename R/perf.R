@@ -18,15 +18,17 @@ perf.PLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("M
   
   # conditions check-up
   if(!("pls" %in% class(object)) && class(object) != "mixo_pls"){ stop("object class must either contain pls class or be mixo_pls class."); print(class(object))}
-
+  
   if(validation[1] == "Mfold"){
     if(folds < 2 || folds > n){ stop(paste("folds must be a value between 2 and",n))}
     K = folds
   }else{K = n}
   
-  if (progressBar == TRUE) pb <- txtProgressBar(style = 3)
-  setTxtProgressBar(pb,1)
-  cat('\n')
+  if (progressBar == TRUE){
+    pb <- txtProgressBar(style = 3)
+    setTxtProgressBar(pb,1)
+    cat('\n')
+  }
   
   set.seed(setseed)
   ind <- sample(1:n,n,replace = FALSE)
@@ -75,7 +77,7 @@ perf.PLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("M
     res$MSEP <- err.moy
     res$MSEPj <- MSEPj
     res$h.best.msep <- h.best.msep
-
+    
   }
   
   if(any(criterion %in% c("all","Q2"))){
@@ -86,6 +88,10 @@ perf.PLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("M
     
     RSSj <- matrix(nrow = ncomp, ncol = q)
     PRESSj <- matrix(nrow = ncomp, ncol = q)
+    colnames(RSSj) <- paste0("Y",1:q)
+    colnames(PRESSj) <- paste0("Y",1:q)
+    rownames(RSSj) <- paste0("Comp",1:ncomp)
+    rownames(PRESSj) <- paste0("Comp",1:ncomp)
     
     # RSS0 computing
     Y.mean <- t(matrix(colMeans(Y), nrow = q, ncol = n)) # mean for each column
@@ -159,23 +165,20 @@ perf.PLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("M
         RSSj[h,j] <- sum((Y[,j])^2)
         PRESSj[h,j] <- sum((Y_test[[h+1]][,j])^2)
       }
-      colnames(RSSj) <- paste0("Y",1:q)
-      colnames(PRESSj) <- paste0("Y",1:q)
-      
-      # RSS computing
-      RSS[h] <- sum(RSSj[h,]) 
-      
-      # PRESSh computing
-      PRESS[h] <- sum(PRESSj[h,]) 
-      
-      # Q2
-      q2[h] <- 1-PRESS[h]/RSS[max(h-1,1)]
-      
       
     }# end h loop
     
+    RSS <- rowSums(RSSj)
+    PRESS <- rowSums(PRESSj)
+    
+    for(h in 1:ncomp){q2[h] <- 1-PRESS[h]/RSS[max(h-1,1)]}
+    
     # first value correction 
     q2[1] <- 1-PRESS[1]/RSS0
+    
+    q2 <- matrix(q2, nrow = 1)
+    colnames(q2) <- paste0("Comp",1:ncomp)
+    q2 <- colSums(q2)
     
     lim <- 0.0975
     
@@ -197,8 +200,8 @@ perf.PLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("M
     
     res$q2 <- q2
     res$PRESS = PRESS
-    res$RSS = RSS
     res$PRESSj = PRESSj
+    res$RSS = RSS
     res$RSSj = RSSj
     res$h.best.q2 = h.best.q2
     
@@ -535,6 +538,10 @@ perf.sPLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("
     
     RSSj <- matrix(nrow = ncomp, ncol = q)
     PRESSj <- matrix(nrow = ncomp, ncol = q)
+    colnames(RSSj) <- paste0("Y",1:q)
+    colnames(PRESSj) <- paste0("Y",1:q)
+    rownames(RSSj) <- paste0("Comp",1:ncomp)
+    rownames(PRESSj) <- paste0("Comp",1:ncomp)
     
     # RSS0 computing
     Y.mean <- t(matrix(colMeans(Y), nrow = q, ncol = n)) # mean for each column
@@ -608,23 +615,20 @@ perf.sPLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("
         RSSj[h,j] <- sum((Y[,j])^2)
         PRESSj[h,j] <- sum((Y_test[[h+1]][,j])^2)
       }
-      colnames(RSSj) <- paste0("Y",1:q)
-      colnames(PRESSj) <- paste0("Y",1:q)
-      
-      # RSS computing
-      RSS[h] <- sum(RSSj[h,]) 
-      
-      # PRESSh computing
-      PRESS[h] <- sum(PRESSj[h,]) 
-      
-      # Q2
-      q2[h] <- 1-PRESS[h]/RSS[max(h-1,1)]
-      
-      
+       
     }# end h loop
+
+    RSS <- rowSums(RSSj)
+    PRESS <- rowSums(PRESSj)
+    
+    for(h in 1:ncomp){q2[h] <- 1-PRESS[h]/RSS[max(h-1,1)]}
     
     # first value correction 
     q2[1] <- 1-PRESS[1]/RSS0
+    
+    q2 <- matrix(q2, nrow = 1)
+    colnames(q2) <- paste0("Comp",1:ncomp)
+    q2 <- colSums(q2)
     
     lim <- 0.0975
     
@@ -646,8 +650,8 @@ perf.sPLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("
     
     res$q2 <- q2
     res$PRESS = PRESS
-    res$RSS = RSS
     res$PRESSj = PRESSj
+    res$RSS = RSS
     res$RSSj = RSSj
     res$h.best.q2 = h.best.q2
     
@@ -991,6 +995,10 @@ perf.gPLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("
     
     RSSj <- matrix(nrow = ncomp, ncol = q)
     PRESSj <- matrix(nrow = ncomp, ncol = q)
+    colnames(RSSj) <- paste0("Y",1:q)
+    colnames(PRESSj) <- paste0("Y",1:q)
+    rownames(RSSj) <- paste0("Comp",1:ncomp)
+    rownames(PRESSj) <- paste0("Comp",1:ncomp)
     
     # RSS0 computing
     Y.mean <- t(matrix(colMeans(Y), nrow = q, ncol = n)) # mean for each column
@@ -1064,23 +1072,20 @@ perf.gPLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("
         RSSj[h,j] <- sum((Y[,j])^2)
         PRESSj[h,j] <- sum((Y_test[[h+1]][,j])^2)
       }
-      colnames(RSSj) <- paste0("Y",1:q)
-      colnames(PRESSj) <- paste0("Y",1:q)
-      
-      # RSS computing
-      RSS[h] <- sum(RSSj[h,]) 
-      
-      # PRESSh computing
-      PRESS[h] <- sum(PRESSj[h,]) 
-      
-      # Q2
-      q2[h] <- 1-PRESS[h]/RSS[max(h-1,1)]
-      
       
     }# end h loop
+
+    RSS <- rowSums(RSSj)
+    PRESS <- rowSums(PRESSj)
+    
+    for(h in 1:ncomp){q2[h] <- 1-PRESS[h]/RSS[max(h-1,1)]}
     
     # first value correction 
     q2[1] <- 1-PRESS[1]/RSS0
+    
+    q2 <- matrix(q2, nrow = 1)
+    colnames(q2) <- paste0("Comp",1:ncomp)
+    q2 <- colSums(q2)
     
     lim <- 0.0975
     
@@ -1102,8 +1107,8 @@ perf.gPLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("
     
     res$q2 <- q2
     res$PRESS = PRESS
+    res$PRESSj = PRESSj   
     res$RSS = RSS
-    res$PRESSj = PRESSj
     res$RSSj = RSSj
     res$h.best.q2 = h.best.q2
     
@@ -1873,6 +1878,7 @@ perf.sgPLSda <- function(object,
   #updated outputs
   return(invisible(result))
 }
+
 
 
 
