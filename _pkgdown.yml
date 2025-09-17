@@ -1,0 +1,27 @@
+url: https://daniel-stage.github.io/sgPLS_develop/
+template:
+  bootstrap: 5
+  bslib:
+    bg: '#F5F8F4'
+    fg: '#050403'
+    primary: '#306cc9'
+navbar:
+  title: sgPLS package
+  type: inverse
+  left:
+  - text: Reference
+    href: reference/index.html
+  - text: Applications
+    menu:
+    - text: PLS performance
+      href: applications/PLS_performance.html
+    - text: PLSDA performance
+      href: applications/PLSDA_performance.html
+    - text: sPLS performance
+      href: applications/sPLS_performance.html
+    - text: sPLSDA performance
+      href: applications/sPLSDA_performance.html
+content:
+  path: pkgdown
+destination: docs
+
