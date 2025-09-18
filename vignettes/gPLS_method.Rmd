@@ -1,0 +1,171 @@
+---
+title: "gPLS method"
+output: html_document
+date: "2025-08-28"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+The gPLS method allows dimensionality reduction by still creating $H$ new components but by selecting groups of variables. This method is therefore ideally suited in a context where several groups of predictors (in $X$) are correlated with several groups of responses (in $Y$); these groups must then be selected.
+
+Concretely, the matrix $X$ is divided into $K$ blocks representing the groups of variables. The same is true for $Y$, which is divided into $L$ blocks. These are then denoted $X = (X_1, X_2, ..., X_K)$ and $Y = (Y_1, Y_2, ..., Y_L)$.
+
+The scores are therefore given by:
+
+$$t_{h} = \sum_{k = 1}^{K} X^{(h)}_k u^{(h)}_k = Xu$$
+$$s_{h} = \sum_{l = 1}^{L} Y^{(h)}_l v^{(h)}_l = Yv$$
+
+Caution: $u^{(h)}_k$ and $v^{(h)}_l$ are no longer real numbers (dimension 1) but vectors of dimensions $p_k$ and $q_l$ respectively.
+
+## Minimization problem
+
+The function to be minimized is written as:
+
+$$\sum_{k=1}^{K} \sum_{l=1}^{L} \left\| M_{k,l} - u_k v_l^T \right\|_F^2 + P_\lambda(u) + P_\mu(v)$$
+
+where $M_{k,l} = X_k^T Y_l$.
+
+The penalties are:
+
+$$P_\lambda(u) = \lambda \sum_{k=1}^{K} \sqrt{p_k} \|u_k\|_2
+\quad \text{et} \quad
+P_\mu(v) = \mu \sum_{l=1}^{L} \sqrt{q_l} \|v_l\|_2$$
+
+The Frobenius norm can also be written:
+
+$$\|M_{k,l} - u_k v_l^T\|_F^2 = \mathrm{Tr}(M_{k,l}M_{k,l}^T) - 2\,\mathrm{Tr}(u_k v_l M_{k,l}^T) + \mathrm{Tr}(u_k u_k^T v_l^T v_l)$$
+
+So the function becomes:
+
+$$\sum_{k=1}^{K} \sum_{l=1}^{L} \mathrm{Tr}(M_{k,l}M_{k,l}^T)
+- 2 \sum_{k=1}^{K} \sum_{l=1}^{L} \mathrm{Tr}(u_k v_l^T M_{k,l}^T)
++ \sum_{k=1}^{K} \sum_{l=1}^{L} \mathrm{Tr}(u_k u_k^T v_l^T v_l)$$
+$$+ \lambda \sum_{k=1}^{K} \sqrt{p_k} \|u_k\|_2
++ \mu \sum_{l=1}^{L} \sqrt{q_l} \|v_l\|_2$$
+
+For all $h \in \{1, ..., H\}$ :
+
+\begin{align*}
+u &= \operatorname*{argmin}_{u} \sum_{k=1}^{K} \sum_{l=1}^{L} \mathrm{Tr}(u_k u_k^T v_l^T v_l) -2 \sum_{k=1}^{K} \sum_{l=1}^{L} \mathrm{Tr}(u_k v_l^T M_{k,l}^T) + \lambda \sum_{k=1}^{K} \sqrt{p_k} \|u_k\|_2 \\
+&= \operatorname*{argmin}_{u} f(u_k) - 2g(u_k) + \lambda \sum_{k=1}^{K} \sqrt{p_k} \|u_k\|_2
+\end{align*}
+
+with :
+
+\begin{align*}
+f(u_k) &= \sum_{k=1}^{K} \sum_{l=1}^{L} \mathrm{Tr}(u_k u_k^T v_l^T v_l)
+= \sum_{k=1}^{K} \sum_{l=1}^{L} v_l^T v_l \, \mathrm{Tr}(u_k u_k^T) \\
+&= \sum_{k=1}^{K} \mathrm{Tr}(u_k u_k^T)
+= \sum_{k=1}^{K} \|u_k\|^2 = \|u\|^2
+\end{align*}
+
+(because $\|v^{(h-1)}\| = 1$)
+
+\begin{align*}
+g(u_k) &= \sum_{k=1}^{K} \sum_{l=1}^{L} \mathrm{Tr}(u_k v_l^T M_{k,l}^T)
+= \sum_{k=1}^{K} \mathrm{Tr} \left( u_k \sum_{l=1}^{L} v_l^T M_{k,l}^T \right)\\
+&= \sum_{k=1}^{K} \mathrm{Tr}(u_k v^T M_k^T)
+= \mathrm{Tr}(u v^T M^T)
+\end{align*}
+
+with $M_k = X_k^T Z$
+
+Hence :
+
+\begin{align*}
+u &= \operatorname*{argmin}_{u_k} \|u\|^2 - 2\,\mathrm{Tr}(u v^T M^T) + \lambda \sum_{k=1}^{K} \sqrt{p_k} \|u_k\|_2 \\
+\iff u_k &= \operatorname*{argmin}_{u_k} \|u_k\|^2 - 2\,\mathrm{Tr}(u_k v^T M_k^T) + \lambda \sqrt{p_k} \|u_k\|_2
+\end{align*}
+
+In the same way :
+
+\begin{align*}
+v_l &= \operatorname*{argmin}_{v_l} \|v_l\|^2 - 2\mathrm{Tr}(v_l u^T M_l) + \mu \sqrt{q_l} \|v_l\|_2
+\end{align*}
+
+with $M_l = X_l^T Z$.
+
+## Problem solving
+
+The values of $u_k$ and $v_l$ must cancel the gradient. We therefore solve:
+
+$$
+\frac{d}{du_k} \left( \|u_k\|^2 - 2 \times \mathrm{Tr}(u_k v^T M_k^T) + \lambda \sqrt{p_k} \|u_k\|_2 \right) = 0
+$$
+
+$$
+\iff \frac{d}{du_k} \|u_k\|^2 - 2 \frac{d}{du_k} \mathrm{Tr}(u_k v^T M_k^T) + \lambda \sqrt{p_k} \frac{d}{du_k} \|u_k\|_2 = 0
+$$
+
+$$
+\iff 2u_k - 2M_k v + \lambda \sqrt{p_k} \frac{u_k}{\|u_k\|_2} = 0
+$$
+
+$$
+\iff 2u_k + \lambda \sqrt{p_k} \frac{u_k}{\|u_k\|_2} = 2M_k v
+$$
+
+$$...$$
+
+$$
+\iff u_k = M_k v \times \left(1 - \frac{\lambda \sqrt{p_k}}{2 \|M_k v\|} \right)
+$$
+
+In the same way, we also find :
+
+$$
+v_l = M_l^T u \times \left(1 - \frac{\mu \sqrt{q_l}}{2 \|M_l^T u\|} \right)
+$$
+
+## Convergence algorithm
+
+To solve the minimization problem, we first perform a SVD decomposition as before (first column of matrices $U$ and $V$). The vectors found are not yet the solutions. We must therefore apply, for each component $h$, for each group $k$, for each group $l$, a convergence algorithm. In the same way as before, we must calculate:
+
+$$
+\tilde{u}^{(h)}_{new,k} = M_k^{(h)} v^{(h)}_{old} \left(1 - \frac{\lambda_h \sqrt{p_k}}{2 \|M_k^{(h)} v^{(h)}_{old}\|} \right)
+$$
+
+then, after having calculated the last $\tilde{u}^{(h)}_{new,k}$ : 
+
+$$
+\tilde{u}^{(h)}_{new} = \begin{pmatrix}
+    \tilde{u}^{(h)}_{new,1} \\
+    ...\\
+    \tilde{u}^{(h)}_{new,p_k}
+\end{pmatrix}
+$$
+
+In the same way, we also find :
+
+$$\tilde{v}^{(h)}_{new,l} = M_l^{(h)T} u^{(h)}_{old} \left(1 - \frac{\mu_h \sqrt{q_l}}{2 \|M_l^{(h)T} u^{(h)}_{old}\|} \right)$$
+
+then, after having calculated the last $\tilde{v}^{(h)}_{new,l}$ : 
+
+$$
+\tilde{v}^{(h)}_{new} = \begin{pmatrix}
+    \tilde{v}^{(h)}_{new,1} \\
+    ...\\
+    \tilde{v}^{(h)}_{new,q_l}
+\end{pmatrix}
+$$
+
+Finally, the solutions found must be standardized :
+
+\begin{align*}
+u^{(h)}_{new} &= \frac{\tilde{u}^{(h)}_{new}}{\|\tilde{u}^{(h)}_{new}\|_2} \\
+v^{(h)}_{new} &= \frac{\tilde{v}^{(h)}_{new}}{\|\tilde{v}^{(h)}_{new}\|_2}
+\end{align*}
+
+We then select $u^{(h)}_{new}$ and $v^{(h)}_{new}$ respectively when $|u^{(h)}_{new} - u^{(h)}_{old}| < eps$ and $|v^{(h)}_{new} - v^{(h)}_{old}| < eps$
+
+\hfill \break
+
+While $|u^{(h)}_{new} - u^{(h)}_{old}| > eps$ or $|v^{(h)}_{new} - v^{(h)}_{old}| > eps$:
+
+- we assign the following values: $u^{(h)}_{old} = u^{(h)}_{new}$ and $v^{(h)}_{old} = v^{(h)}_{new}$
+
+- we repeat one more loop.

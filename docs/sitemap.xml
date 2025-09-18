@@ -1,20 +1,14 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>/404.html</loc></url>
-<url><loc>/applications/PLSDA_performance.html</loc></url>
-<url><loc>/applications/PLS_performance.html</loc></url>
-<url><loc>/applications/sPLSda_performance.html</loc></url>
-<url><loc>/applications/sPLS_performance.html</loc></url>
 <url><loc>/articles/gPLS_method.html</loc></url>
+<url><loc>/articles/gPLS_perf.html</loc></url>
 <url><loc>/articles/index.html</loc></url>
 <url><loc>/articles/PLSDA_method.html</loc></url>
-<url><loc>/articles/PLSDA_performance.html</loc></url>
+<url><loc>/articles/PLSDA_perf.html</loc></url>
 <url><loc>/articles/PLS_method.html</loc></url>
-<url><loc>/articles/PLS_performance.html</loc></url>
-<url><loc>/articles/PLS_performance00.html</loc></url>
-<url><loc>/articles/sgPLS_method.html</loc></url>
-<url><loc>/articles/sPLSDA_performance.html</loc></url>
+<url><loc>/articles/PLS_perf.html</loc></url>
 <url><loc>/articles/sPLS_method.html</loc></url>
-<url><loc>/articles/sPLS_performance.html</loc></url>
+<url><loc>/articles/sPLS_perf.html</loc></url>
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
 <url><loc>/reference/data.create.html</loc></url>
@@ -24,11 +18,10 @@
 <url><loc>/reference/msep.PLS.html</loc></url>
 <url><loc>/reference/per.variance.html</loc></url>
 <url><loc>/reference/perf.html</loc></url>
+<url><loc>/reference/plot.indiv.html</loc></url>
 <url><loc>/reference/plotcim.html</loc></url>
 <url><loc>/reference/PLS.html</loc></url>
 <url><loc>/reference/PLSda.html</loc></url>
-<url><loc>/reference/pls_perf.html</loc></url>
-<url><loc>/reference/PLS_performance.html</loc></url>
 <url><loc>/reference/predict.html</loc></url>
 <url><loc>/reference/q2.PLS.html</loc></url>
 <url><loc>/reference/select.sgpls.html</loc></url>
@@ -43,5 +36,6 @@
 <url><loc>/reference/tuning.gPLS.X.html</loc></url>
 <url><loc>/reference/tuning.sgPLS.X.html</loc></url>
 <url><loc>/reference/tuning.sPLS.X.html</loc></url>
+<url><loc>/reference/tuning.sPLS.XY.html</loc></url>
 </urlset>
 

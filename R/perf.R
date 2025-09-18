@@ -464,7 +464,6 @@ perf.sPLS <- function(object, criterion = c("all","MSEP","Q2"), validation = c("
   if(is.null(tol)){tol = 10^(-6)}
   if(is.null(max.iter)){max.iter = 500}
   if(is.null(keepX)){keepX = rep(ncol(X),ncomp)}
-  if(is.null(keepY)){keepY = rep(ncol(Y),ncomp)}
   
   # others conditions check-up
   if(!("pls" %in% class(object)) && class(object) != "mixo_pls"){ stop("object class must either contain pls class or be mixo_pls class."); print(class(object))}

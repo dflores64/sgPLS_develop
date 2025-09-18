@@ -1,0 +1,87 @@
+---
+title: "PLS-DA method"
+output: html_document
+date: "2025-08-13"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## What is PLS-DA ?
+
+With the ending of its acronym Discriminant Analysis, PLS-DA turns out to be a classification method using dimension reduction and discriminant analysis. This often shows good results when it is possible to discriminate the categories (also called classes) of variables in $Y$ based on variables in $X$.
+
+This time, we consider a dataset $(X,Y)$ where the only variable $Y$ is categorical and composed of $k$ classes. $Y$ is then recoded into a one-hot model and is represented as a matrix of size $n \times k$;
+
+$$
+\tilde{Y} = (\tilde{Y}_1 | \tilde{Y}_2 | ... | \tilde{Y}_k)
+$$
+
+The latent variables $t^{(h)}$ and $s^{(h)}$ are determined using the same procedure as for PLS, this time using the matrix $\tilde{Y}$ in one-hot encoding. We therefore have in particular $s^{(h)} = \tilde{Y}^{(h)}u^{(h)}$, $\forall h \in 1,...,H$.
+
+## How to make predictions ?
+
+The H-component predictions are given by $\hat{\tilde{Y}}_{new} = X_{new}U(C^TU)^{-1}B$ with:
+
+→ $U$ the $p \times H$ matrix of component weights in $X$
+
+→ $C$ the $p \times H$ matrix of coefficients of $X$ on $T$
+
+→ $B$ the $H \times k$ matrix of coefficients of $T$ on $Y$
+
+We therefore find the columns of $C$ by the following expression:
+
+$$ c_h = \frac{X^{(h)T} t_h}{t^T_h t_h} $$
+
+we also have the expression :
+
+$$ B = (T^TT)^{-1}T^T\tilde{Y} $$
+
+$Remark$
+
+We can acknowledge the same expression $\hat{\tilde{Y}}_{new} = X_{new}U(C^TU)^{-1}B$ in the PLS method except that $Y$ and $\hat{Y}_{new}$ are not one-hot encoded.
+
+Since the matrix $\hat{\tilde{Y}}_{new}$ is of size $n_{new} \times k$, the assignment of classes of $\hat{Y}_{new}$ is therefore done using a distance calculation method called "metric"; there are three of them:
+
+- the Maximum distance
+
+- the Centroid distance
+
+- the Mahalanobis distance
+
+#### Maximum distance
+
+The distance from the maximum is the simplest. We start from $\hat{\tilde{Y}}_{new}$ where the values represent scores for each individual and for each class. The class to predict will therefore be the one with the highest score. In other words, we have:
+
+$$\hat{c}_i = \operatorname*{argmax}_l (\hat{\tilde{Y}}_{new})_{i,l} \forall i \in {1,...,n}$$
+
+
+With $i$ the row index and $l$ the column index of $(\hat{\tilde{Y}}_{new})_{i,l}$.
+
+#### Centroïd and Mahalanobis distance
+
+The centroid and Mahalanobis distances are based on the trained latent variable $\hat{t}^{(h)}$ and on the predicted latent variables from $\hat{t}^{(1)}_{new} = X^{(1)}_{new}u$ to $\hat{t}^{(h)}_{new} = X^{(h)}_{new}u$.
+
+Concretely, this involves calculating a Euclidean distance between the center of gravity of $t^{(h)}$ and the predicted latent variables. The class for which the distance is the smallest is then selected.
+
+$T_c$ denotes a portion of the matrix $T$ containing only the individuals of class $c$. The predicted component matrix $\hat{T} = \hat{T}_{new} = X_{new}U(C^TU)^{-1}$ is also denoted.
+
+#### Centroïd distance 
+
+- we therefore calculate $T_c$
+- we then calculate the centroid vector $Gc = \frac{1}{n_c}\mathbb{1}_{n_c}^TT_c = (\frac{1}{n_c} \frac{1}{n_c}...\frac{1}{n_c})T_c$ with $n_c$ the frequency of class $c$.
+- we find the matrix $G$ composed of the row vectors $G_c$
+- for each row vector of $\hat{T}_{new}$, we calculate the Euclidean distance with each of the row vectors of $G$. Finally, we assign the class $c$ for which the distance is the smallest. In other words: 
+
+$$\hat{Y}_i = \operatorname*{argmin}_{1\leq c \leq k} dist(\hat{T}_i,G_c) = \operatorname*{argmin}_{1\leq c \leq k} \sqrt{\sum_{h=1}^{H} (\hat{T}_{i,h} - G_{c,h})^2}$$ 
+
+$\forall i \in {1,...,n}$
+
+#### Mahalanobis distance
+
+For this distance, we calculate the matrix $G$ as before, then for each row vector of $\hat{T}$ we calculate the Mahalanobis distance with each of the row vectors of $G$.
+
+$$\hat{Y}_i = \operatorname*{argmin}_{1\leq c \leq k} dist(\hat{T}_i,G_c) = \operatorname*{argmin}_{1\leq c \leq k} \sqrt{(\hat{T}_i - G_c)^TCov^{-1}(\hat{T}_i - G_c)}$$
+
+$\forall i \in {1,...,n}$ and with $Cov^{-1}$ the inverse of the covariance matrix $Cov$ applied to the vector $(\hat{T}_i - G_c)$.

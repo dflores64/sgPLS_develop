@@ -1,4 +1,4 @@
-url: https://daniel-stage.github.io/sgPLS_develop/
+url: https://dflores64.github.io/sgPLS_develop/
 template:
   bootstrap: 5
   bslib:
@@ -11,16 +11,26 @@ navbar:
   left:
   - text: Reference
     href: reference/index.html
-  - text: Applications
+  - text: Performance
     menu:
     - text: PLS performance
-      href: applications/PLS_performance.html
+      href: articles/PLS_perf.html
     - text: PLSDA performance
-      href: applications/PLSDA_performance.html
-    - text: sPLS performance
-      href: applications/sPLS_performance.html
-    - text: sPLSDA performance
-      href: applications/sPLSDA_performance.html
+      href: articles/PLSDA_perf.html
+    - text: Sparse PLS performance
+      href: articles/sPLS_perf.html
+    - text: Group PLS performance
+      href: articles/gPLS_perf.html
+  - text: Theory for sgPLS methods
+    menu:
+    - text: PLS method
+      href: articles/PLS_method.html
+    - text: PLSDA method
+      href: articles/PLSDA_method.html
+    - text: sPLS method
+      href: articles/sPLS_method.html
+    - text: gPLS method
+      href: articles/gPLS_method.html
 content:
   path: pkgdown
 destination: docs

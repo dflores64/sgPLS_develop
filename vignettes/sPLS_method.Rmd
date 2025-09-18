@@ -1,0 +1,181 @@
+---
+title: "sPLS method"
+output: html_document
+date: "2025-08-14"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## What is sPLS method ?
+
+The sPLS method (sparse partial least Square) follows the principle of PLS but also involves applying a Lasso penalty to certain variables in order to eliminate them.
+In the set $X$, for each component $t_h$, the variable $X^{(h)}_j$ is eliminated if $u^{(h)}_j = 0$ on a.
+In the set $Y$, for each component $s_h$, the variable $Y^{(h)}_j$ is eliminated if $v^{(h)}_j = 0$ on a.
+
+When $h = 1$, the minimization problem therefore becomes:
+
+$$(u,v) = \operatorname*{argmin}_{u,v} \; \|M - uv^T\|^2_F + P_\lambda(u) + P_\mu(v)$$
+
+
+$\lambda$ and $\mu$ are the regularization parameters. $\mu$ is sometimes replaced by the notation $\lambda_2$. These parameters allow us to nuance the degree of sparsity, that is, the rate of deleted variables. In particular, the larger $\lambda$ and $\mu$ are, the more variables are deleted in $X$ and $Y$, respectively.
+
+
+
+The minimization function is biconvex, so it cannot be solved simultaneously in $u$ and $v$.
+The solution is therefore to proceed variable by variable: for example, we fix $u$ to minimize in $v$, then vice versa.
+
+The function can also be written as below:
+
+$$\begin{align*}
+f(u,v) &= \|M - uv^T\|^2_F + P_\lambda(u) + P_\mu(v) \\
+&= \sum_{i=1}^{p} \sum_{j=1}^{q} (m_{i,j} - u_i v_j)^2 + P_\lambda(u) + P_\mu(v) \\
+&= \sum_{i=1}^{p} \sum_{j=1}^{q} m_{i,j}^2 - 2\sum_{i=1}^{p} \sum_{j=1}^{q} m_{i,j} u_i v_j + \sum_{i=1}^{p} \sum_{j=1}^{q} u_i^2 v_j^2 \\
+& + P_\lambda(u) + P_\mu(v) \\
+&= \sum_{i=1}^{p} \sum_{j=1}^{q} m_{i,j}^2 - 2\sum_{i=1}^{p} u_i \sum_{j=1}^{q} m_{i,j} v_j + \sum_{i=1}^{p} u_i^2 \sum_{j=1}^{q} v_j^2 \\
+& + P_\lambda(u) + P_\mu(v) \\
+&= \sum_{i=1}^{p} \sum_{j=1}^{q} m_{i,j}^2 + \sum_{i=1}^{p} u_i^2 \sum_{j=1}^{q} v_j^2 - 2\sum_{i=1}^{p} u_i \sum_{j=1}^{q} m_{i,j} v_j \\
+& + 2\lambda \sum_{i=1}^{p} |u_i| + 2\mu \sum_{j=1}^{q} |v_j|
+\end{align*}$$
+
+with the following relations :
+
+$$P_\lambda(u) = 2\lambda \sum_{i=1}^{p} |u_i|$$
+
+$$P_\mu(v) = 2\mu \sum_{j=1}^{q} |v_j|$$
+When $h>1$, we replace the expressions $m_{i,j}$, $u_i$, and $v_j$ with $m^{(h)}_{i,j}$, $u^{(h)}_i$, and $v^{(h)}_j$, respectively.
+
+## How to solve minimisation problem ?
+
+### Shen & Huang lemma
+
+We must therefore solve:
+
+$$\begin{align*}
+    \tilde{u} &= \operatorname*{argmin}_{u} ||M - uv^T||^2_F + P_\lambda(u) \\
+    &= \operatorname*{argmin}_u\left( \sum_{i=1}^{p} u_i^2 -2\sum_{i=1}^{p}u_i\sum_{j=1}^{q} m_{i,j} v_j + 2\lambda\sum_{i=1}^{p}|u_i| \right) \\
+    \implies\tilde{u}_i &= \operatorname*{argmin}_u u^2_i  -2u_i\sum_{j=1}^{q} m_{i,j} v_j + 2\lambda|u_i| \\
+    &= \operatorname*{argmin}_u u^2_i  -2u_i (Mv)_i
+    + 2\lambda|u_i| 
+\end{align*}$$   
+
+Using the first lemma of Shen & Huang which will be demonstrated a little later, we arrive at the following result:
+
+$$\tilde{u}_i = \text{sign}((Mv)_i) \times \max(|(Mv)_i|-\lambda,0) = \text{soft}(Mv,\lambda)$$
+
+In the same way,
+
+
+$$\begin{align*}
+\tilde{v} &= \operatorname*{argmin}_v ||M - vu^T||^2_F + P_\mu(v) \\
+&= \operatorname*{argmin}_v \left( \sum_{j=1}^{q} v_j^2  -2\sum_{i=1}^{p}u_i\sum_{j=1}^{q} m_{i,j} v \right)+  2\mu\sum_{j=1}^{q}|v_j|\\  
+    \implies\tilde{v}_j &= \operatorname*{argmin}_v(v^2_j  -2v_j\sum_{i=1}^{p} m_{i,j} u_i)+ 2\mu|v_j| \\
+    &= \text{sign}((M^Tu)_j ) \times \max(|(M^Tu)_j|-\mu,0) \\
+    &= \text{soft}((M^Tu)_j,\mu)
+\end{align*}$$
+
+Remarks :
+
+- in the problem according $u$, the sum factor $\sum_{j=1}^{q} v_j^2$ disappears because of the valid condition $||v|| = \sqrt{\sum_{j=1}^{q} v_j^2} = 1$. It is the same for $v$.
+    
+- the term $\sum_{i=1}^{p} \sum_{j=1}^{q} m_{i,j}^2$ disappears because neither $\tilde{u}$ nor $\tilde{v}$ is depending to.
+    
+- $\tilde{u}_i$ and $\tilde{v}_j$ expressions made disappear $\sum_{i=1}^{p}$ and $\sum_{j=1}^{q}$ respectively.
+    
+- Shen & Huang lemma is defined by :
+
+$$\operatorname*{argmin}_x x^2 - 2ax + 2b|x| = \text{sign}(a) \times \max(|a|-b,0), \forall x,a \in \mathbb{R}, b>0$$
+
+The right expression is also called \textit{soft thresholding} function on $a$.
+
+
+### Lemma demonstration
+
+Let be : $f(x) =  x^2 - 2ax + 2b|x|$  
+We want to find $x^*$ such that $f'(x^*) = 0$.
+
+$$f'(x) 
+\begin{cases} 
+= 2x - 2a +2b & \text{if } x > 0, \\
+\in ]2x - 2a -2b ; 2x - 2a +2b[ & \text{if } x = 0, \\
+= 2x - 2a -2b & \text{if } x < 0.
+\end{cases}$$
+
+$$f'(x^*) = 0 \iff
+\begin{cases} 
+2x^* - 2a +2b = 0 & \text{if } x^* > 0, \\
+2x^* - 2a -2b = 0 & \text{if } x^* < 0.
+\end{cases}
+\iff 
+\begin{cases} 
+x^* - a +b = 0 & \text{if } x^* > 0, \\
+x^* - a -b = 0 & \text{if } x^* < 0.
+\end{cases}$$
+
+$$\iff x^* =
+\begin{cases} 
+a-b & \text{if } x^* > 0, \\
+0 & \text{if } x^* = 0, \\
+a+b & \text{if } x^* < 0.
+\end{cases}
+\iff x^* = 
+\begin{cases} 
+a-b & \text{if } a > b, \\
+0 & \text{if } |a| < b, \\
+a+b & \text{if } a < -b.
+\end{cases}
+\iff x^* = \text{sign}(a) \times \max(|a|-b,0)$$ 
+
+
+$x^*$, $a$ and $b$ play respectively $u$, $Mv$ and $\lambda$ role on the one hand then $v$,  $M^Tu$ and $\mu$ on the other hand.
+
+### Convergence algorithm
+
+To solve the minimization problem, we first perform an SVD decomposition as before (first column of matrices $U$ and $V$). The vectors found are not yet the solutions. Therefore, a convergence algorithm must be applied for each component $h$.
+
+We first define: $\tilde{u}^{(h)}_{old} = \tilde{u}^{(h)}$ and $\tilde{v}^{(h)}_{old} = \tilde{v}^{(h)}$.
+
+We must therefore calculate $\forall h \in 1,...,H, \forall i \in 1,...,p, \forall j \in 1,...,q$ :
+
+$$\begin{align*}
+    \tilde{u}^{(h)}_{new} &= \text{soft}(M^{(h)}v^{(h)}_{old},\lambda_h)
+    \implies\tilde{u}^{(h)}_{new,i} = \text{soft}((M^{(h)}v^{(h)}_{old})_i,\lambda_h) \\ 
+    \tilde{v}^{(h)}_{new} &= \text{soft}(M^{(h)T}u^{(h)}_{old},\mu_h)
+    \implies\tilde{v}^{(h)}_{new,j} = \text{soft}((M^{(h)T}u^{(h)}_{old})_j,\mu_h) 
+\end{align*}$$
+
+We then normalize weights :
+
+$$\begin{align*}
+    u^{(h)}_{new} = \frac{\tilde{u}^{(h)}_{new}}{||\tilde{u}^{(h)}_{new}||_2} ;
+    v^{(h)}_{new} = \frac{\tilde{v}^{(h)}_{new}}{||\tilde{v}^{(h)}_{new}||_2} \\
+\end{align*}$$
+
+We hence select $u^{(h)}_{new}$ and $v^{(h)}_{new}$ respectively when $|u^{(h)}_{new} - u^{(h)}_{old}| < eps$ and $|v^{(h)}_{new} - v^{(h)}_{old}| < eps$.
+
+While $|u^{(h)}_{new} - u^{(h)}_{old}| > eps$ or $|v^{(h)}_{new} - v^{(h)}_{old}| > eps$:
+
+- assign the following values: $u^{(h)}_{old} = u^{(h)}_{new}$ and $v^{(h)}_{old} = v^{(h)}_{new}$
+
+- repeat one more loop.
+
+### Special case of PLS1
+
+In the case of PLS1, the minimization problem in $u$ becomes, considering $m = X^Ty$:
+
+$$\begin{align*}
+    \tilde{u} &= \operatorname*{argmin}_{u} ||m - u||^2_2 + P_\lambda(u) \\
+    &= \operatorname*{argmin}_u\left( \sum_{i=1}^{p} u_i^2 -2\sum_{i=1}^{p}u_im_i + 2\lambda\sum_{i=1}^{p}|u_i| \right) \\
+    \implies\tilde{u}_i &= \operatorname*{argmin}_u u^2_i  -2u_im_i
+    + 2\lambda|u_i| \\
+    &= \text{sign}(m_i) \times \max(|(m_i|-\lambda,0) = \text{soft}(m_i,\lambda)
+\end{align*}$$
+
+We can now compute (in PLS1 as in PLS2) : 
+
+$$t_{h} = \sum_{j=1}^{p} u^{(h)}_j X^{(h)}_{j} = X^{(h)}u^{(h)}$$
+
+$$s_{h} = \sum_{j=1}^{q} v^{(h)}_j Y^{(h)}_{j} = Y^{(h)}v^{(h)}$$
+
+The principle of matrix deflation is the same as for the PLS method.

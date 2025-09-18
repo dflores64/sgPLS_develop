@@ -1,0 +1,147 @@
+---
+title: "sPLS performance"
+output: html_document
+date: "2025-07-30"
+---
+
+
+
+# Introduction
+
+This page presents an application of the sPLS performance assessment. The sPLS method is a quite particular method : there are several predictions according to the components number selected in the model. The goal is almost to choose the best number of component in sPLS regression in order to compute the best possible predictions but also to select the best number of variables. For that, we will use three datasets: 
+
+- one is a dataset with only one response variable $Y$.
+
+- the other is a dataset with four response variables $Y = (Y1,Y2,Y3,Y4)$.
+
+- the last dataset contains real data about NIR spectra.
+
+To access to predefined functions from sgPLSdevelop package and manipulate these datasets, run these lines :
+
+```{r data, message=FALSE, warning=FALSE}
+library(sgPLSdevelop)
+library(pls)
+
+data1 <- data.create(p = 10, list = TRUE)
+data2 <- data.create(p = 10, q = 4, list = TRUE)
+data(yarn)
+data3 <- yarn
+
+ncomp.max <- 8
+```
+```{r, echo=FALSE}
+print(paste("First dataset dimensions :",nrow(data1$D),"x",ncol(data1$D)))
+print(paste("Second dataset dimensions :",nrow(data2$D),"x",ncol(data2$D)))
+print(paste("Yarn dataset dimensions :",nrow(data3),"x",ncol(data3$NIR)+ncol(as.matrix(data3$density))))
+```
+
+
+For the two first datasets, the population is set to $n = 40$ by default, which is close to actual conditions. 
+Let's also notice that, on average, the response $Y$ is a linear combination from the predictors $X$. Indeed, the function includes a matrix product $Y = XB + E$ with $B$ the weight matrix and $E$ matrix the gaussian noise. This linearity condition is important in order to have a good performance of the model, the PLS method using linearity combinaison. 
+
+Now, it's time to train a PLS model for each dataset built or imported.
+
+
+# sPLS performance assessment using MSEP
+
+An good way to assess such a model performance consists by using $MSEP$ criterion. $MSEP$ is computed as follow :
+
+$MSEP = \frac{1}{nq} \sum_{i=1}^{n} \sum_{j=1}^{q} (Y_{i,j} - \hat{Y}_{i,j})^2$
+
+The function named `tuning.sPLS.XY` will allow to assess the performance and to choose the best parameters. This function outputs the best tuning parameters but also two MSEP plots : the one shows the MSEP according to the number of components and the other shows the MSEP according to the number of selected variables in $X$ and $Y$. Particularly, in multivariate sPLS ($q>1$), the "plot" is a table of MSEP values.
+
+Once the best tuning parameters obtained, it is interesting to display the population projected on the best components : a scatterplot will be used. The component used for the $x$ axe will be the `h.best` given by `tuning.sPLS.XY`. The component used for the $y$ axe will be the second best component named `h.best2` respecting the condition `h.best2` $<$ `h.best` to make sure the `plot.indiv` function work (the sPLS model is built with `h.best`components.
+
+# First model MSEP
+
+## MSEP for tuning parameters
+
+
+```{r}
+# First model
+X <- data1$X
+Y <- data1$Y
+
+# tuning
+perf.res1 <- tuning.sPLS.XY(X,Y,ncomp = ncomp.max)
+msep.h <- perf.res1$MSEP.h
+h.best <- perf.res1$h.best
+h.best2 <- which.min(msep.h[1:(h.best-1)]) # h.best2 < h.best
+keepX.best <- perf.res1$keepX.best
+keepY.best <- perf.res1$keepY.best
+```
+
+The `perf.sPLS` gives us a optimal components number equal to $H =$ `r h.best`, therefore we suggest to select `r h.best` components in our first model. It indicates us also to select `r unique(keepX.best)` variables for each component.
+
+## Population dispersion
+
+Let's take a look at the population projected on the best components.
+
+```{r}
+model1 <- sPLS(X,Y,ncomp = h.best, keepX = keepX.best)
+pop.model1 <- plot.indiv(model1, compX = c(h.best, h.best2))
+pop.model1$graphX
+```
+
+
+# Second model MSEP
+
+## MSEP for tuning parameters
+
+```{r}
+# second model
+X <- data2$X
+Y <- data2$Y
+
+#tuning
+perf.res2 <- tuning.sPLS.XY(X,Y,ncomp = ncomp.max)
+msep.h <- perf.res2$MSEP.h
+h.best <- perf.res2$h.best
+h.best2 <- which.min(msep.h[1:(h.best-1)]) # h.best2 < h.best
+keepX.best <- perf.res2$keepX.best
+keepY.best <- perf.res2$keepY.best
+```
+
+The `perf.sPLS` gives us a optimal components number equal to $H =$ `r h.best`, therefore we suggest to select `r h.best` components in our first model. It indicates us also to select `r unique(keepX.best)` variables in $X$ and `r unique(keepY.best)` variables in $Y$.
+
+## Population dispersion
+
+Let's take a look at the population projected on the best components.
+
+```{r}
+model2 <- sPLS(X,Y,ncomp = h.best, keepX = keepX.best, keepY = keepY.best)
+pop.model2 <- plot.indiv(model2, compX = c(h.best, h.best2), compY = c(h.best, h.best2))
+pop.model2$graphX
+pop.model2$graphY
+```
+
+
+# Third model MSEP
+
+## MSEP for tuning parameters
+
+```{r}
+# Third model
+X <- data3$NIR
+Y <- data3$density
+Y <- as.matrix(Y)
+
+# tuning
+perf.res3 <- tuning.sPLS.XY(X,Y,ncomp = ncomp.max)
+h.best <- perf.res3$h.best
+h.best2 <- which.min(msep.h[1:(h.best-1)]) # h.best2 < h.best
+keepX.best <- perf.res3$keepX.best
+keepY.best <- perf.res3$keepY.best
+```
+
+The `perf.sPLS` gives us a optimal components number equal to $H =$ `r h.best`, therefore we suggest to select `r h.best` components in our first model. It indicates us also to select `r unique(keepX.best)` variables in $X$ and `r unique(keepY.best)` variables in $Y$.
+
+## Population dispersion
+
+Let's take a look at the population projected on the best components.
+
+```{r}
+model3 <- sPLS(X,Y,ncomp = h.best, keepX = keepX.best)
+pop.model3 <- plot.indiv(model3, compX = c(h.best, h.best2))
+pop.model3$graphX
+```

@@ -1,0 +1,159 @@
+---
+title: "PLS regression method"
+output: html_document
+date: "2025-08-12"
+---
+
+
+## What is PLS regression ?
+
+PLS is above all a dimension reduction method equivalent to PCA, with the creation of $H$ new components, but it remains a supervised method. PLS can be adapted to regression (in which case it is referred to as PLS1), to classification (PLS-DA), and can also be multivariate (PLS2).
+
+We then consider the dataset divided into two other centered and standardized datasets $X$ and $Y$ of sizes $n \times p$ and $n \times q$ respectively.  
+The $H$ new components created are denoted $t_1$, $t_2$, ..., $t_H$ for the $X$ dataset and $s_1$, $s_2$, ..., $s_H$ for the $Y$ dataset.  
+They are a linear combination of the variables $X_1$, ..., $X_p$ as well as the variables $Y_1$, ..., $Y_q$, respectively.
+
+
+```{r, message = FALSE}
+library(sgPLSdevelop)
+data <- data.create(n = 50, q = 5)
+X <- data$X
+Y <- data$Y
+```
+
+
+## How to compute the first component ?
+
+Here it is the expressions for the first component of $X$ and $Y$.
+
+$$t_1 = \sum_{j=1}^{p} u_j X_j = Xu$$
+
+$$s_1 = \sum_{j=1}^{q} v_j Y_j = Yv$$
+with $u_1$,...,$u_p$ and $v_1$,...,$v_q$ the associated weights.
+
+Theses weights are therefore obtained by maximizing the covariance between $t_1$ and $s_1$, that is, by determining:
+
+$$\operatorname*{argmax}_{u,v} \; \operatorname{Cov}(Xu, Yv)$$
+
+with the constraint $||u|| = ||v|| = 1$ ($u \in \mathbb{R}^{p}, v \in \mathbb{R}^{q})$.
+
+To do this, one must decompose the matrix product $M = X^T Y$ into singular values:
+
+$$M = U \Delta V^T$$.
+
+- $\Delta$ is the diagonal matrix containing the singular values of $M$, i.e., the square roots of the eigenvalues of $MM^T$.
+- $U$ contains the left singular vector (which is also the eigenvector of $MM^T$).
+- $V$ contains the right singular vector (which is also the eigenvector of $M^TM$).
+
+The vectors $u$ and $v$ that maximize this covariance are respectively the first columns of matrices $U$ and $V$.
+
+```{r}
+svd <- svd(t(X)%*%Y)
+u <- svd$u[,1]
+v <- svd$v[,1]
+t <- X%*%u
+s <- Y%*%v
+```
+
+
+## How to compute all components ?
+
+
+From the second component onward, $h$ becomes greater than $1$, and new matrices and new weights are defined; it is therefore necessary to introduce new notations.  
+$\forall h \in 1,...,H$, the expressions become:
+
+$$
+t_{h} = \sum_{j=1}^{p} u^{(h)}_j X^{(h)}_{j} = X^{(h)}u^{(h)}
+$$
+
+$$
+s_{h} = \sum_{j=1}^{q} v^{(h)}_j Y^{(h)}_{j} = Y^{(h)}v^{(h)}
+$$
+
+We thus define the matrices \( X^{(1)}, \ldots, X^{(h)} \), \( Y^{(1)}, \ldots, Y^{(h)} \), as well as new weight vectors such that:
+
+- \( X^{(1)} = X \)
+- \( X^{(h+1)} = X^{(h)} - t_{h} c^T_{h} \)
+- \( u^{(1)} = u \)
+- \( Y^{(1)} = Y \)
+- \( Y^{(h+1)} = Y^{(h)} - t_{h} d^T_{h} \)
+- \( v^{(1)} = v \)
+
+The weights are thus obtained by maximizing the covariance between \( t_h \) and \( s_h \), that is, by determining:
+
+$$
+\operatorname*{argmax}_{u^{(h)},v^{(h)}} \; \operatorname{Cov}(X^{(h)}u^{(h)}, Y^{(h)}v^{(h)})
+$$
+
+with the constraint \( \| u^{(h)} \| = \| v^{(h)} \| = 1 \).
+
+To do so, the matrix product is decomposed as:
+
+$$
+M^{(h)} = X^{(h)T}Y^{(h)} = U^{(h)} \Delta V^{(h)T}
+$$
+
+**Computation of $X^{(h)}$ and $Y^{(h)}$**
+
+To determine \( X^{(h)} \) and \( Y^{(h)} \), we first compute the vectors \( c_{h-1} \) and \( d_{h-1} \) using the formulas:
+
+$$
+c_h = \frac{X^{(h)T} t_h}{t^T_h t_h}
+$$
+
+$$
+d_h = \frac{Y^{(h)T} t_h}{t^T_h t_h}
+$$
+
+**Remark**:  
+
+- In the case of PLS1, since the method is univariate for \( Y \), we have \( u = 1 \).  
+- In the canonical mode of PLS, the matrix deflation expressions are:
+
+$$
+Y^{(h)} = Y^{(h-1)} - t_{h-1} d^T_{h-1} 
+$$
+
+$$
+e_h = \frac{Y^{(h)T} s_h}{s^T_h s_h}
+$$
+
+Theses vectors and matrices (except the deflated matrices $X^{(h)}$ and $Y^{(h)}$ when $h>1$) can be found with the PLS function.
+
+```{r}
+model <- PLS(X,Y,ncomp = 10,mode = "regression")
+mat.t <- model$variates$X
+mat.s <- model$variates$Y
+mat.c <- model$mat.c
+mat.d <- model$mat.d
+mat.e <- model$mat.e # "NA" printed because of regression mode
+```
+
+
+## How to make predictions ?
+
+Predictions are given by :
+
+$\hat{Y}_{new} = X_{new}B' = X_{new}U(C^TU)^{-1}B$ with :
+
+→ $U = (u_1 | u_2 | ... | u_H)$
+
+→ $C = (c_1 | c_2 | ... | c_H)$, $p \times H$ coefficients matrix of $X$ on $T$
+
+→ $B = (T^TT)^{-1}T^TY$, $H \times k$ coefficients matrix of $T$ on $Y$.
+
+
+We hence find $C$ columns by the following expression :
+
+$$c_h = \frac{X^{(h)T} t_h}{t^T_h t_h}$$
+
+It is also possible to make predictions about the new components by calculating :
+
+$$\hat{T}_{new} = X_{new}U(C^TU)^{-1}$$
+
+We also have the relation : $\hat{Y}_{new} = \hat{T}_{new}B$
+
+**Remark** : the newdata $X_{new}$ are scaled according the $X$ attributes, we have to unscale $\hat{Y}_{new}$ by using $Y$ attributes. $X$ and $Y$ are parts of training set in this context.
+
+
+

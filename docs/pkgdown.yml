@@ -5,12 +5,9 @@ articles:
   gPLS_method: gPLS_method.html
   gPLS_perf: gPLS_perf.html
   PLS_method: PLS_method.html
-  PLS_performance: PLS_performance.html
-  PLS_performance0: PLS_performance0.html
+  PLS_perf: PLS_perf.html
   PLSDA_method: PLSDA_method.html
-  PLSDA_performance: PLSDA_performance.html
-  sgPLS_method: sgPLS_method.html
+  PLSDA_perf: PLSDA_perf.html
   sPLS_method: sPLS_method.html
-  sPLS_performance: sPLS_performance.html
-  sPLSDA_performance: sPLSDA_performance.html
-last_built: 2025-09-03T17:40Z
+  sPLS_perf: sPLS_perf.html
+last_built: 2025-09-18T13:05Z
