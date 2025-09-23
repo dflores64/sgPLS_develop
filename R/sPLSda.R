@@ -6,6 +6,11 @@ function(X,
          max.iter = 500,		 
          tol = 1e-06)
 {
+
+  # check-up arguments
+  p <- ncol(X)
+  if(ncomp > p){stop("ncomp must be lower than or equal to the number of X columns")}
+  if(ncomp > length(keepX)){stop("ncomp must be lower than or equal to length of keepX")}
   		
     # Testing the input Y
     if (is.null(dim(Y)))
