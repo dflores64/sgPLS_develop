@@ -3,7 +3,7 @@ import(pls)
 
 export(PLS,sPLS,gPLS,sgPLS,PLSda,sPLSda,gPLSda,sgPLSda,predict.PLS,predict.sPLS,predict.gPLS,predict.sgPLS,predict.PLSda,predict.sPLSda,predict.gPLSda,predict.sgPLSda,tuning.gPLS.X,tuning.sgPLS.X,tuning.sPLS.X,tuning.sPLS.XY,normv,
 soft.thresholding,soft.thresholding.group,soft.thresholding.sparse.group,lambda.quadra,plot.indiv,
-step1.spls.sparsity,step1.sparse.group.spls.sparsity,step1.group.spls.sparsity,step2.spls,per.variance,plotcim,select.spls,select.sgpls,select.var,perf,
+step1.spls.sparsity,step1.sparse.group.spls.sparsity,step1.group.spls.sparsity,step2.spls,per.variance,plotcim,select.spls,select.sgpls,select.var,
 perf.PLS,perf0.sPLS,perf.sPLS,perf.gPLS,perf.sgPLS,perf.PLSda,perf.sPLSda,perf.gPLSda,perf.sgPLSda,data.create,data.cl.create,data.spls.create,msep.PLS,q2.PLS)
 
 
@@ -26,6 +26,7 @@ S3method(perf, PLSda)
 S3method(perf, sPLSda)
 S3method(perf, gPLSda)
 S3method(perf, sgPLSda)
+
 
 
 
