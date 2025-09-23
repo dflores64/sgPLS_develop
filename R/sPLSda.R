@@ -9,8 +9,8 @@ function(X,
 
   # check-up arguments
   p <- ncol(X)
-  if(ncomp > p){stop("ncomp must be lower than or equal to the number of X columns")}
-  if(ncomp > length(keepX)){stop("ncomp must be lower than or equal to length of keepX")}
+  if(ncomp > p){stop("'ncomp' must be lower than or equal to the number of X columns.")}
+  if(ncomp > length(keepX)){stop("'ncomp' must be lower than or equal to length of 'keepX'.")}
   		
     # Testing the input Y
     if (is.null(dim(Y)))
