@@ -4,6 +4,11 @@ sPLS <- function(X,Y,ncomp,mode="regression",max.iter=500,tol=1e-06,keepX = rep(
   q <- ncol(Y)
   p <- ncol(X)
   n <- nrow(X)
+
+  # check-up arguments
+  if(ncomp > p){stop("ncomp must be lower than or equal to the number of X columns")}
+  if(ncomp > length(keepX)){stop("ncomp must be lower than or equal to length of keepX")}
+  
   X.names = dimnames(X)[[2]]
   if (is.null(X.names)) 
     X.names = paste("X", 1:p, sep = "")
@@ -79,3 +84,4 @@ sPLS <- function(X,Y,ncomp,mode="regression",max.iter=500,tol=1e-06,keepX = rep(
   class(result) = c("sPLS", "spls","pls")
   return(invisible(result))
 }
+
