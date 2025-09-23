@@ -1879,6 +1879,10 @@ perf.sgPLSda <- function(object,
 }
 
 
+perf <- function(object) {
+  return()
+}
+
 
 
 
