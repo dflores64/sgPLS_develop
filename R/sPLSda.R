@@ -7,6 +7,8 @@ function(X,
          tol = 1e-06)
 {
   		
+    p <- ncol(X)
+    
     # Testing the input Y
     if (is.null(dim(Y)))
     {
@@ -15,6 +17,10 @@ function(X,
     }else {
         stop("'Y' should be a factor or a class vector.")						
     }		
+  
+  # check-up arguments
+  if(ncomp > p){stop("ncomp must be lower than or equal to the number of X columns")}
+  if(ncomp > length(keepX)){stop("ncomp must be lower than or equal to length of keepX")}
 
     result = sPLS(X, ind.mat, ncomp = ncomp, mode = "regression", keepX = keepX, 
                   max.iter = max.iter, tol = tol)
