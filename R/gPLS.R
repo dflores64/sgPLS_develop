@@ -4,6 +4,11 @@ gPLS <- function(X,Y,ncomp,mode="regression",max.iter=500,tol=1e-06,keepX ,keepY
   q <- ncol(Y)
   p <- ncol(X)
   n <- nrow(X)
+
+  if(ncomp > length(keepX)){stop("'ncomp' must be lower than or equal to length of 'keepX'.")}
+  if(max(ind.block.x) >= ncol(X)){stop(paste("The maximum value of 'ind.block.x' (",max(ind.block.x),") must be lower than the number of X columns (",ncol(X),")."))}
+  if(!identical(ind.block.x,sort(ind.block.x))){stop("'ind.block.x' vector values must be strictly increasing.")}
+  
   X.names = dimnames(X)[[2]]
   if (is.null(X.names)) 
     X.names = paste("X", 1:p, sep = "")
