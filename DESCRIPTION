@@ -5,15 +5,12 @@ Version: 1.8
 Date: 2025-09-23
 Author: Benoit Liquet and Pierre Lafaye de Micheaux
 Maintainer: Benoit Liquet <b.liquet@uq.edu.au>
-Depends: mvtnorm
+Depends: ggplot2
 Description: Regularized version of partial least square approaches providing sparse, group, and sparse group versions of partial least square regression models (Liquet, B., Lafaye de Micheaux, P., Hejblum B., Thiebaut, R. (2016) <doi:10.1093/bioinformatics/btv535>). Version of PLS Discriminant analysis is also provided.
 License: GPL (>= 2.0)
 NeedsCompilation: no
-Packaged: 2023-10-05 04:08:00 UTC; liquet
+Packaged: 2025-09-05 04:08:00 UTC; liquet
 Repository: CRAN
-Date/Publication: 2023-10-05 05:50:02 UTC
-URL: https://daniel-stage.github.io/sgPLS_develop/, https://dflores64.github.io/sgPLS_develop/
 RoxygenNote: 7.3.2
-Date/Publication: 2025-09-29 05:50:02 UTC
 URL: https://dflores64.github.io/sgPLS_develop/
 
