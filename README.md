@@ -27,5 +27,5 @@ ncomp.max <- 8
 model <- PLS(X,Y,mode = "regression", ncomp = ncomp.max)
 print(head(model$loadings$X))
 ```
-```
+
 
