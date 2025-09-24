@@ -8,6 +8,9 @@ gPLS <- function(X,Y,ncomp,mode="regression",max.iter=500,tol=1e-06,keepX ,keepY
   if(ncomp > length(keepX)){stop("'ncomp' must be lower than or equal to length of 'keepX'.")}
   if(max(ind.block.x) >= ncol(X)){stop(paste("The maximum value of 'ind.block.x' (",max(ind.block.x),") must be lower than the number of X columns (",ncol(X),")."))}
   if(!identical(ind.block.x,sort(ind.block.x))){stop("'ind.block.x' vector values must be strictly increasing.")}
+  if(max(ind.block.y) >= ncol(Y)){stop(paste("The maximum value of 'ind.block.y' (",max(ind.block.y),") must be lower than the number of Y columns (",ncol(Y),")."))}
+  if(!identical(ind.block.y,sort(ind.block.y))){stop("'ind.block.y' vector values must be strictly increasing.")}
+
   
   X.names = dimnames(X)[[2]]
   if (is.null(X.names)) 
