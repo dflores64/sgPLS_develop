@@ -17,6 +17,10 @@ gPLSda <-
       stop("'Y' should be a factor or a class vector.")						
     }		
     
+  if(ncomp > length(keepX)){stop("'ncomp' must be lower than or equal to length of 'keepX'.")}
+  if(max(ind.block.x) >= ncol(X)){stop(paste("The maximum value of 'ind.block.x' (",max(ind.block.x),") must be lower than the number of X columns (",ncol(X),")."))}
+  if(!identical(ind.block.x,sort(ind.block.x))){stop("'ind.block.x' vector values must be strictly increasing.")}
+    
     result = gPLS(X, ind.mat, ncomp = ncomp, mode = "regression", keepX = keepX, 
                    max.iter = max.iter, tol = tol,ind.block.x = ind.block.x)
     
