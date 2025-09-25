@@ -1,0 +1,43 @@
+sPLSda <-
+function(X, 
+         Y,		
+         ncomp = 2, 
+         keepX = rep(ncol(X), ncomp),
+         max.iter = 500,		 
+         tol = 1e-06)
+{
+
+  # check-up arguments
+  p <- ncol(X)
+  if(ncomp > p){stop("'ncomp' must be lower than or equal to the number of X columns.")}
+  if(ncomp > length(keepX)){stop("'ncomp' must be lower than or equal to length of 'keepX'.")}
+  		
+    p <- ncol(X)
+    
+    # Testing the input Y
+    if (is.null(dim(Y)))
+    {
+        Y = as.factor(Y)	
+        ind.mat = unmap(as.numeric(Y))					
+    }else {
+        stop("'Y' should be a factor or a class vector.")						
+    }		
+  
+  # check-up arguments
+  if(ncomp > p){stop("ncomp must be lower than or equal to the number of X columns")}
+  if(ncomp > length(keepX)){stop("ncomp must be lower than or equal to length of keepX")}
+
+    result = sPLS(X, ind.mat, ncomp = ncomp, mode = "regression", keepX = keepX, 
+                  max.iter = max.iter, tol = tol)
+       
+    cl = match.call()
+    cl[[1]] = as.name('sPLSda')
+    result$call = cl
+
+    result$ind.mat = ind.mat
+    result$names$Y = levels(Y)
+    
+    class(result) = c("sPLSda","splsda","plsda")
+    return(invisible(result))	
+}
+
