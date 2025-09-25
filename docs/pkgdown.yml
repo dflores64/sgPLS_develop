@@ -1,0 +1,36 @@
+url: https://dflores64.github.io/sgPLS_develop/
+template:
+  bootstrap: 5
+  bslib:
+    bg: '#F5F8F4'
+    fg: '#050403'
+    primary: '#306cc9'
+navbar:
+  title: sgPLS package
+  type: inverse
+  left:
+  - text: Reference
+    href: reference/index.html
+  - text: Performance
+    menu:
+    - text: PLS performance
+      href: articles/PLS_performance.html
+    - text: PLSDA performance
+      href: articles/PLSDA_perf.html
+    - text: sPLS performance
+      href: articles/sPLS_perf.html
+    - text: gPLS performance
+      href: articles/gPLS_perf.html
+  - text: Theory for sgPLS methods
+    menu:
+    - text: PLS method
+      href: articles/PLS_method.html
+    - text: PLSDA method
+      href: articles/PLSDA_method.html
+    - text: sPLS method
+      href: articles/sPLS_method.html
+    - text: gPLS method
+      href: articles/gPLS_method.html
+content:
+  path: pkgdown
+destination: docs
