@@ -47,7 +47,7 @@ sPLS <- function(X,Y,ncomp,mode="regression",max.iter=500,tol=1e-06,keepX = rep(
   sparsity.x <- dim(X.s)[2]-keepX
   sparsity.y <- dim(Y.s)[2]-keepY
   res.load <- step1.spls.sparsity(X=X.s,Y.s,sparsity.x=sparsity.x[1],sparsity.y=sparsity.y[1],epsilon=tol,iter.max=max.iter)
-  res.deflat <- step2.spls(X=X.s,Y=Y.s,res.load$u.tild.new,res.load$v.tild.new,mode=mode)
+  res.deflat <- step1.spls(X=X.s,Y=Y.s,res.load$u.tild.new,res.load$v.tild.new,mode=mode)
   mat.c[,1] <- res.deflat$c
   iter <- res.load$iter
   if (mode=="regression") mat.d[,1] <- res.deflat$d else mat.e[,1] <- res.deflat$e
@@ -64,7 +64,7 @@ sPLS <- function(X,Y,ncomp,mode="regression",max.iter=500,tol=1e-06,keepX = rep(
       load.v <- cbind(load.v,res.load$v.tild.new)
       mat.t[, h] <- res.deflat$X.h%*%res.load$u.tild.new
       mat.u[, h] <- res.deflat$Y.h%*%res.load$v.tild.new      
-      res.deflat <- step2.spls(X=res.deflat$X.h,Y=res.deflat$Y.h,res.load$u.tild.new,res.load$v.tild.new,mode=mode)
+      res.deflat <- step1.spls(X=res.deflat$X.h,Y=res.deflat$Y.h,res.load$u.tild.new,res.load$v.tild.new,mode=mode)
       mat.c[,h] <- res.deflat$c
       if (mode=="regression") mat.d[,h] <- res.deflat$d else mat.e[,h] <- res.deflat$e
       iter <- c(iter,res.load$iter)
@@ -87,4 +87,5 @@ sPLS <- function(X,Y,ncomp,mode="regression",max.iter=500,tol=1e-06,keepX = rep(
   class(result) = c("sPLS", "spls","pls")
   return(invisible(result))
 }
+
 
