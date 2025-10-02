@@ -45,9 +45,6 @@ CV <- function(X,Y,type = "loo",mode = "regression",ncomp){
   return(err/n)
 }
 
-d1 <- data.create(q=2)
-CV(d1$X,d1$Y,mode = "regression",ncomp = 1)
-
 
 # seconde version -----------
 
