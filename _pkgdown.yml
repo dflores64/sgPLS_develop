@@ -14,7 +14,7 @@ navbar:
   - text: Performance
     menu:
     - text: PLS performance
-      href: articles/PLS_performance.html
+      href: articles/PLS_perf.html
     - text: PLSDA performance
       href: articles/PLSDA_perf.html
     - text: sPLS performance

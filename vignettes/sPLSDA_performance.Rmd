@@ -1,0 +1,362 @@
+---
+title: "sPLS-DA performance"
+output: html_document
+date: "2025-08-01"
+---
+
+# Introduction
+
+This page presents an application of the sPLSDA performance assessment. The PLS method is a quite particular method : there are several predictions according to the components number selected in the model. It is the same with sPLSDA. The goal is almost to choose the best number of component in order to compute the best possible predictions. For that, we will use two datasets: 
+
+- one is a dataset with only five predictor variable $X = (X1,X2,X3,X4,X5)$ and two classes.
+
+- the other is a dataset with forty predictor variables $X = (X1,X2,...,X40)$ ans three classes. With $p > n$, this dataset approches realist conditions for PLS training.
+
+To access to predefined functions from sgPLSdevelop package and manipulate these datasets, run these lines :
+
+```{r data, message=FALSE, warning=FALSE}
+library(sgPLSdevelop)
+
+data1 <- data.cl.create(p = 5, list = TRUE) # 2 classes by default
+data2 <- data.cl.create(n = 30, p = 40, classes = 3, list = TRUE)
+```
+
+Now, it's time to train a PLS model for each dataset built.
+
+```{r pls, message=FALSE, warning=FALSE}
+ncomp.max <- 5
+#keepX <- rep(4,ncompmax)
+
+# First model
+X <- data1$X
+Y <- as.factor(data1$Y)
+model1 <- sPLSda(X,Y, ncomp = ncomp.max)
+
+# Second model
+X <- data2$X
+Y <- as.factor(data2$Y)
+model2 <- sPLSda(X,Y, ncomp = ncomp.max)
+```
+
+
+# Leave-one-out CV
+
+```{r, echo = FALSE}
+perf.sPLSda <- function(object, K=nrow(object$X), ncomp = object$ncomp, method = "max.dist", keepX = object$keepX){
+  
+  X <- object$X
+  Y <- map(object$Y)
+  n <- nrow(X)
+  p <- ncol(X)
+  
+  if(method == "max.dist"){dist=1}else if(method == "centroids.dist"){dist=2}else{dist=3}
+  
+  # prediction analysis
+  err <- matrix(NA, nrow = K, ncol = ncomp)
+  
+  b <- floor(n/K) # block size
+  ind <- 1:n
+  
+  for(k in seq_len(K)){
+    
+    # bloc definition
+    ind.beg <- (k-1) * b + 1 # block k beginning
+    ind.end <- k * b # block k end
+    ind.test <- ind[ind.beg:ind.end]
+    X.train <- X[-ind.test,]
+    Y.train <- Y[-ind.test]
+    X.test <- X[ind.test,]
+    Y.test <- Y[ind.test]
+    
+    for(h in 1:ncomp){
+      # model created
+      modele <- sPLSda(X = X.train,Y = Y.train, ncomp = h, keepX = keepX)
+      pred <- predict.sPLSda(modele, newdata = X.test, methode = methode)$class[[dist]]
+      equal <- Y.test == pred[,h]
+      err[k,h] <- sum(1-equal)
+      
+    }
+  }
+  
+  err.moy <- colSums(err)/b/K
+  
+  h.best <- min(which.min(err.moy))
+  
+  par(mfrow = c(1,2))
+  plot(err.moy, col="blue", pch = 16, type = "b", main = "Error rate of the model", xlab = "number of components", ylab = "Error")
+  
+  # PART 2 : number of variables selection
+  
+  ## prediction analysis
+  err <- numeric(p)
+  
+  for(k in seq_len(K)){
+    
+    ## bloc definition
+    ind.beg <- (k-1) * b + 1 # block k beginning
+    ind.end <- k * b # block k end
+    ind.test <- ind[ind.beg:ind.end]
+    X.train <- X[-ind.test,]
+    Y.train <- Y[-ind.test]
+    X.test <- X[ind.test,]
+    Y.test <- Y[ind.test]
+    
+    
+    for(i in 1:p){  
+        
+      modele <- sPLS(X = X.train, Y = Y.train, ncomp = h.best, mode = "regression", keepX = rep(i,h.best))  
+        
+      ## predictions
+      pred <- predict.sPLS(modele, newdata = X.test)$predict[,,h.best]
+      err[i] <- err[i] + sum(colSums(as.matrix((Y.test - pred)^2)))
+
+    }
+  }
+  
+  err.moy2 <- err/b/K
+  err.min <- min(err.moy2)
+  
+  # min error coordinates identification
+  
+  nb.keepX <- which.min(err)
+  keepX.best <- rep(nb.keepX,h.best)
+  
+  plot(err.moy2, col="orange", pch = 16, type = "b", main = "MSEP of the model", ylab = "MSEP", xlab = "number of variables selected in X (keepX)")
+  
+  return(setNames(list(err.moy,h.best,err.moy2,keepX.best),c("error.h","h.best","error.p","keepX.best")))
+}
+
+# predict.sPLSda
+
+predict.sPLSda <- predict.gPLSda <- predict.sPLSda <- 
+function(object, newdata, 
+         method = c("all", "max.dist", "centroids.dist", "mahalanobis.dist"), ...)  
+{
+	#-- validation des arguments --#
+    if (missing(newdata))
+    stop("No new data available.")
+     
+    X = object$X
+    Y = object$Y 
+    Yprim = object$ind.mat   
+    q = ncol(Yprim)          
+    p = ncol(X)
+	
+    if (length(dim(newdata)) == 2) {
+        if (ncol(newdata) != p)
+            stop("'newdata' must be a numeric matrix with ncol = ", p, 
+            " or a vector of length = ", p, ".")
+    }
+     
+    if (length(dim(newdata)) == 0) {
+        if (length(newdata) != p)
+            stop("'newdata' must be a numeric matrix with ncol = ", p, 
+            " or a vector of length = ", p, ".")
+        dim(newdata) = c(1, p) 
+    }
+     
+    #-- initialisation des matrices --#	
+    ncomp = object$ncomp
+    a = object$loadings$X
+    b = object$loadings$Y
+    c = object$mat.c
+     
+    means.X = attr(X, "scaled:center")
+    means.Y = attr(Y, "scaled:center")
+    sigma.X = attr(X, "scaled:scale")
+    sigma.Y = attr(Y, "scaled:scale")
+     
+    newdata = as.matrix(newdata)
+    ones = matrix(rep(1, nrow(newdata)), ncol = 1)
+    ##- coeff de regression 
+    B.hat = array(0, dim = c(p, q, ncomp))
+    ##- prediction
+    Y.hat = array(0, dim = c(nrow(newdata), q, ncomp))
+    ##- variates
+    t.pred = array(0, dim = c(nrow(newdata), ncomp))
+    variates.X = object$variates$X
+    betay = list()
+    
+    #-- prediction --#
+    for(h in 1:ncomp){
+        dd= coefficients(lm(Y~variates.X[,1:h,drop=FALSE])) #regression of Y on variates.global.X => =loadings.global.Y at a scale factor
+        if(q==1){betay[[h]]=(dd[-1])}
+        if(q>=2){betay[[h]]=(dd[-1,])}
+
+        W = a[, 1:h,drop=FALSE] %*% solve(t(c[, 1:h,drop=FALSE]) %*% a[, 1:h,drop=FALSE])
+        B = W %*% drop(betay[[h]])
+
+        Y.temp=scale(newdata,center=means.X,scale=sigma.X) %*% as.matrix(B) #so far: gives a prediction of Y centered and scaled
+        Y.temp2=scale(Y.temp,center=FALSE,scale=1/sigma.Y) #so far: gives a prediction of Y centered, with the right scaling
+        Y.temp3=scale(Y.temp2,center=-means.Y,scale=FALSE) #so far: gives a prediction of Y with the right centering and scaling
+
+        Y.hat[, , h] = Y.temp3 # we add the variance and the mean of Y used in object to predict
+        t.pred[, h] = scale(newdata, center = means.X, scale = sigma.X) %*% W[, h]
+        B.hat[, , h] = B
+    }  #end h
+    
+    G = matrix(0, nrow = q, ncol = ncomp)
+    cls = list()
+    
+    for (i in 1:q) {
+        if(ncomp > 1) {
+
+            G[i, ] = apply(object$variates$X[Yprim[, i] == 1, , drop = FALSE], 2, mean)
+        }
+        else {
+            G[i, ] = mean(object$variates$X[Yprim[, i] == 1, ])
+        }
+    }	
+		
+	# ----    max distance -----------------
+	
+    if (any(method == "all") || any(method == "max.dist")) {
+         
+	    function.pred = function(x){
+            nr = nrow(x)
+            tmp = vector("numeric", nr)
+            for(j in 1:nr){
+                tmp[j] = (which(x[j, ] == max(x[j, ]))[1])
+            }
+            return(tmp)
+        }
+        cls$max.dist = matrix(apply(Y.hat, 3, function.pred), ncol = ncomp)
+        colnames(cls$max.dist) = paste(rep("comp", ncomp), 1:ncomp, sep = " ")
+    }
+
+	# ----    centroids distance -----------------
+
+	if (any(method == "all") || any(method == "centroids.dist")) {
+     
+        cl = matrix(nrow = nrow(newdata), ncol = ncomp)
+         
+        centroids.fun = function(x, G, h) {
+            q = nrow(G)
+            x = matrix(x, nrow = q, ncol = h, byrow = TRUE)
+            if (h > 1) {
+                d = apply((x - G[, 1:h])^2, 1, sum)
+            }
+            else {
+                d = (x - G[, 1])^2
+            }
+            cl.id = which.min(d)
+        }
+	    	
+        for (h in 1:ncomp) {
+            cl.id = apply(matrix(t.pred[, 1:h], ncol = h), 1, centroids.fun, G = G, h = h)
+            cl[, h] = cl.id		
+        }
+        colnames(cl) = paste(rep("comp", ncomp), 1:ncomp, sep = " ")
+        cls$centroids.dist = cl
+    }	
+
+	# ----    mahalanobis distance -----------------
+	
+    if (any(method == "all") || any(method == "mahalanobis.dist")) {
+     
+        cl = matrix(nrow = nrow(newdata), ncol = ncomp)
+         
+        Sr.fun = function(x, G, Yprim, h) {
+            q = nrow(G)
+            Xe = Yprim %*% G[, 1:h]
+            Xr = object$variates$X[, 1:h] - Xe
+            Sr = t(Xr) %*% Xr / nrow(Y)
+            Sr.inv = solve(Sr)
+            
+            x = matrix(x, nrow = q, ncol = h, byrow = TRUE)
+            if (h > 1) {
+                mat = (x - G[, 1:h]) %*% Sr.inv %*% t(x - G[, 1:h])
+                d = apply(mat^2, 1, sum)
+            }
+            else {
+                d = drop(Sr.inv) * (x - G[, 1])^2
+            }
+            cl.id = which.min(d)
+        }
+	     	
+        for (h in 1:ncomp) {
+            cl.id = apply(matrix(t.pred[, 1:h], ncol = h), 1, Sr.fun, G = G, Yprim = Yprim, h = h)
+            cl[, h] = cl.id		
+        }
+        colnames(cl) = paste(rep("comp", ncomp), 1:ncomp, sep = " ")
+        cls$mahalanobis.dist = cl
+    }
+	
+    #-- valeurs sortantes --#
+    if (any(method == "all")) method = "all"
+    rownames(t.pred) = rownames(newdata)
+    colnames(t.pred) = paste("dim", c(1:ncomp), sep = " ")
+    rownames(Y.hat) = rownames(newdata)
+    colnames(Y.hat) = colnames(Y)
+    colnames(G) = paste("dim", c(1:ncomp), sep = " ")
+     
+    return(invisible(list(predict = Y.hat, variates = t.pred, B.hat = B.hat, 
+		                  centroids = G, method = method, class = cls)))
+}
+
+```
+
+
+### First model 
+
+```{r}
+perf.res1 <- perf.sPLSda(model1)
+h.best <- perf.res1$h.best
+keepX.best <- perf.res1$keepX.best
+```
+
+The `perf.sPLSda` gives us an optimal components number equal to $H =$ `r h.best`, therefore we suggest to select `r h.best` components in our first model. The function also indicates us to select `r unique(keepX.best)` variables for each component.
+
+### Second model
+
+```{r}
+perf.res2 <- perf.sPLSda(model2)
+h.best <- perf.res2$h.best
+keepX.best <- perf.res2$keepX.best
+```
+
+The `perf.sPLSda` gives us an optimal components number equal to $H =$ `r h.best`, therefore we suggest to select `r h.best` components in our first model. The function also indicates us to select `r unique(keepX.best)` variables for each component.
+
+# 10-fold CV
+
+### First model 
+
+```{r}
+perf.res1 <- perf.sPLSda(model1, K = 10)
+h.best <- perf.res1$h.best
+keepX.best <- perf.res1$keepX.best
+```
+
+The `perf.sPLSda` gives us an optimal components number equal to $H =$ `r h.best`, therefore we suggest to select `r h.best` components in our first model. The function also indicates us to select `r unique(keepX.best)` variables for each component.
+
+### Second model 
+
+```{r}
+perf.res2 <- perf.sPLSda(model2, K = 10)
+h.best <- perf.res2$h.best
+keepX.best <- perf.res2$keepX.best
+```
+
+The `perf.sPLSda` gives us an optimal components number equal to $H =$ `r h.best`, therefore we suggest to select `r h.best` components in our first model. The function also indicates us to select `r unique(keepX.best)` variables for each component.
+
+# 5-fold CV
+
+### First model 
+
+```{r}
+perf.res1 <- perf.sPLSda(model1, K = 5)
+h.best <- perf.res1$h.best
+keepX.best <- perf.res1$keepX.best
+```
+
+The `perf.sPLSda` gives us an optimal components number equal to $H =$ `r h.best`, therefore we suggest to select `r h.best` components in our first model. The function also indicates us to select `r unique(keepX.best)` variables for each component.
+
+### Second model 
+
+```{r}
+perf.res2 <- perf.sPLSda(model2, K = 5)
+h.best <- perf.res2$h.best
+keepX.best <- perf.res2$keepX.best
+```
+
+The `perf.sPLSda` gives us an optimal components number equal to $H =$ `r h.best`, therefore we suggest to select `r h.best` components in our first model. The function also indicates us to select `r unique(keepX.best)` variables for each component.

@@ -1,0 +1,317 @@
+---
+title: "PLS performance"
+output: html_document
+date: "2025-07-30"
+---
+
+
+# Introduction
+
+This page presents an application of the PLS performance assessment. The PLS method is a quite particular method : there are several predictions according to the number of components selected in the model. The goal is almost to choose the best number of component in PLS regression in order to compute the best possible predictions. For that, we will use three datasets: 
+
+- one is a dataset with only one response variable $Y$.
+
+- the other is a dataset with four response variables $Y = (Y1,Y2,Y3,Y4)$.
+
+- the last dataset contains real data about NIR spectra.
+
+The goal is also to compare the $Q2$ values with the ones of an other package : `mixOmics`.
+
+To access to predefined functions from sgPLSdevelop package and manipulate these datasets, run these lines :
+
+```{r data, message=FALSE, warning=FALSE}
+library(sgPLSdevelop)
+library(pls)
+library(mixOmics) 
+
+data1 <- data.create(p = 10, list = TRUE)
+data2 <- data.create(p = 10, q = 4, list = TRUE)
+data(yarn)
+data3 <- yarn
+```
+```{r, echo=FALSE}
+print(paste("First dataset dimensions :",nrow(data1$D),"x",ncol(data1$D)))
+print(paste("Second dataset dimensions :",nrow(data2$D),"x",ncol(data2$D)))
+print(paste("Yarn dataset dimensions :",nrow(data3),"x",ncol(data3)))
+```
+
+
+For the two first datasets, the population is set to $n = 40$ by default, which is close to actual conditions. 
+Let's also notice that, on average, the response $Y$ is a linear combination from the predictors $X$. Indeed, the function includes a matrix product $Y = XB + E$ with $B$ the weight matrix and $E$ matrix the gaussian noise. This linearity condition is important in order to have a good performance of the model, the PLS method using linearity combinaison. 
+
+Now, it's time to train a PLS model for each dataset built or imported. 
+
+```{r pls, message=FALSE, warning=FALSE}
+ncomp.max <- 8
+
+# First model
+X <- data1$X
+Y <- data1$Y
+model1 <- sgPLSdevelop::PLS(X,Y,mode = "regression", ncomp = ncomp.max)
+model.mix1 <- mixOmics::pls(X,Y,mode = "regression", ncomp = ncomp.max) 
+
+# Second model
+X <- data2$X
+Y <- data2$Y
+model2 <- sgPLSdevelop::PLS(X,Y,mode = "regression", ncomp = ncomp.max)
+model.mix2 <- mixOmics::pls(X,Y,mode = "regression", ncomp = ncomp.max) 
+
+# Third model
+X <- data3$NIR
+Y <- data3$density
+model3 <- sgPLSdevelop::PLS(X,Y,mode = "regression", ncomp = ncomp.max)
+model.mix3 <- mixOmics::pls(X,Y,mode = "regression", ncomp = ncomp.max) 
+```
+
+In the continuation of this article, we will show PLS performance assessment by using $Q_2$ criterion and then $MSEP$ criterion.
+
+# Q2 criterion
+
+What is Q² indicator ?
+
+The $Q^2$ is an assessment indicator for PLS models; for each new component $h$, a new matrix $Y^{(h)}$ is obtained by deflation and compared to the corresponding prediction matrix $\hat{Y}^{(h)}$. The Q2 therefore takes this comparison into account. A $Q^2$ value close to $1$ indicates a good performance. To compute this figure, we must compute two more indicators : the $RSS$ and the $PRESS$.
+
+
+$RSS_h = \sum_{i=1}^{n} \sum_{j=1}^{q} (Y^{(h)} - \hat{Y})^2 =  \sum_{i=1}^{n} \sum_{j=1}^{q} (Y^{(h+1)}_{i,j})^2$
+
+$PRESS_h = \sum_{i\in test}^{n} \sum_{j=1}^{q} (Y_{i,j}^{(h)} - \hat{Y}_{i,j})^2 =  \sum_{i\in test}^{n} \sum_{j=1}^{q} (Y^{(h+1)}_{i,j})^2$
+
+Then, $Q^2$ is defined by this formula :
+
+$Q^2_h = 1 - \frac{PRESS_h}{RSS_{h-1}}$
+
+How to use Q² ?
+
+We compare the value of this criterion to a certain limit $l$ ; this limit is conventionally equal to $1-0.95^2 = 0.0975$. As long as we have the inequality $Q^2_h \geq l$, we keep on following iteration ; therefore we stop when we have $Q^2_h < l$.
+
+Using Q² with R
+
+The $Q^2$ function, available below and named as `q2.PLS()`, takes three parameters : 
+
+- the model ("pls" class object)
+
+- the mode : we must choose between "regression" or "canonical"
+
+- the number of maximal components
+
+
+
+## First model Q2
+
+```{r, fig.cap= "Q2 values for the first model"}
+par(mfrow = c(1,2))
+q2.res1 <- q2.PLS(model1)
+h.best <- q2.res1$h.best
+q2.PLS(model1, ncomp = min(h.best+1, ncomp.max))$q2
+q2.1 <- q2.res1$q2
+
+# mixOmics results
+perf <- perf(model.mix1, validation = "loo")
+q2.mix1 <- perf$measures$Q2.total$values$value
+```
+
+The `q2.pls` function gives us a optimal number of components to select equal to $H =$ `r h.best`, therefore we suggest to select `r h.best` components in our first model.
+
+## Second model Q2
+
+```{r, fig.cap= "Q2 values for the second model"}
+par(mfrow = c(1,2))
+q2.res2 <- q2.PLS(model2)
+h.best <- q2.res2$h.best
+q2.PLS(model2, ncomp = min(h.best+1, ncomp.max))$q2
+q2.2 <- q2.res2$q2
+
+# mixOmics results
+perf <- perf(model.mix2, validation = "loo")
+q2.mix2 <- perf$measures$Q2.total$values$value
+```
+
+The `q2.pls` function gives us a optimal number of components to select equal to $H =$ `r h.best`.
+
+## Third model Q2
+
+```{r, fig.cap= "Q2 values for the third model"}
+par(mfrow = c(1,2))
+q2.res3 <- q2.PLS(model3)
+h.best <- q2.res3$h.best
+q2.PLS(model3, ncomp = min(h.best+1, ncomp.max))$q2
+q2.3 <- q2.res3$q2
+
+# mixOmics results
+perf <- perf(model.mix3, validation = "loo")
+q2.mix3 <- perf$measures$Q2.total$values$value
+```
+
+The `q2.pls` function gives us a optimal number of components to select equal to $H =$ `r h.best`.
+
+## Comparison with MixOmics package functions
+
+Now, let's compare the $Q2$ values according to the two packages with a plot.
+
+```{r, fig.cap= "Q2 values compared with sgPLS and mixOmics"}
+col <- c("red","pink","darkgreen","green","darkblue","lightblue")
+legend <- c("Model 1 sgPLS", "Model 1 mixOmics","Model 2 sgPLS", "Model 2 mixOmics","Model 3 sgPLS", "Model 3 mixOmics")
+data.q2 <- data.frame(q2.1,q2.mix1,q2.2,q2.mix2,q2.3,q2.mix3)    
+matplot(data.q2, type = "b", ylim = c(-100,2), pch = 4, col = col, xlab = "Number of components", ylab = "Q2 values", main = "Q2 according to the model and to the package")
+#legend(x = 1, y = -30, col = col, legend = legend)
+```
+
+The nuances of red, green and blue represent respectively the first, second and third model. The dark colors refer to the results obtained with sgPLS and the light colors with mixOmics. 
+
+It seems that the $q2$ values are higher with `mixOmics` package.
+
+# MSEP criterion
+
+An other way to assess such a model performance consists in using $MSEP$ criterion. $MSEP$ is computed as follow :
+
+$MSEP = \frac{1}{nq} \sum_{i=1}^{n} \sum_{j=1}^{q} (Y_{i,j} - \hat{Y}_{i,j})^2$
+
+Then, we select the $h_{best}$ number of components which corresponds to the lower $MSEP$ value.
+
+
+## First model MSEP
+
+```{r, fig.cap= "MSEP for the first model"}
+msep.res1 <- msep.PLS(model1)
+h.best <- msep.res1$h.best
+msep1 <- msep.res1$MSEP.cv
+msep.best <- msep1[h.best]
+
+# mixOmics results
+q <- ncol(model.mix1$Y)
+perf <- perf(model.mix1, validation = "loo")
+msep.mix1 <- perf$measures$MSEP$values$value
+msep.mix1 <- colSums(matrix(msep.mix1, nrow = q))
+```
+
+The `msep.PLS` function gives us a optimal number of components equal to $H =$ `r h.best`, therefore we suggest to select `r h.best` components in our first model.
+
+## Second model MSEP
+
+```{r, fig.cap= "MSEP for the second model"}
+msep.res2 <- msep.PLS(model2)
+h.best <- msep.res2$h.best
+msep2 <- msep.res2$MSEP.cv
+msep.best <- msep2[h.best]
+
+# mixOmics results
+q <- ncol(model.mix2$Y)
+perf <- perf(model.mix2, validation = "loo")
+msep.mix2 <- perf$measures$MSEP$values$value
+msep.mix2 <- colSums(matrix(msep.mix2, nrow = q))
+```
+
+The `msep.PLS` function gives us a optimal number of components equal to $H =$ `r h.best`.
+
+## Third model MSEP
+
+```{r, fig.cap= "MSEP for the third model"}
+msep.res3 <- msep.PLS(model3)
+h.best <- msep.res3$h.best
+msep3 <- msep.res3$MSEP.cv
+msep.best <- msep3[h.best]
+
+# mixOmics results
+q <- ncol(model.mix3$Y)
+perf <- perf(model.mix3, validation = "loo")
+msep.mix3 <- perf$measures$MSEP$values$value
+msep.mix3 <- colSums(matrix(msep.mix3, nrow = q))
+```
+
+The `msep.PLS` function gives us a optimal number of components equal to $H =$ `r h.best`.
+
+## Comparison with MixOmics package functions
+
+Now, let's compare the $MSEP$ values according to the two packages with a plot.
+
+```{r, fig.cap= "MSEP values compared with sgPLS and mixOmics"}
+col <- c("red","pink","darkgreen","green","darkblue","lightblue")
+legend <- c("Model 1 sgPLS", "Model 1 mixOmics","Model 2 sgPLS", "Model 2 mixOmics","Model 3 sgPLS", "Model 3 mixOmics")
+data.msep <- data.frame(msep1,msep.mix1,msep2,msep.mix2,msep3,msep.mix3)    
+matplot(data.msep, type = "b", ylim = c(0,4), pch = 4, col = col, xlab = "Number of components", ylab = "MSEP values", main = "Q2 according to the model and to the package")
+#legend(x = 5, y = 4, col = col, legend = legend)
+```
+
+The nuances of red, green and blue represent respectively the first, second and third model. The dark colors refer to the results obtained with sgPLS and the light colors with mixOmics. 
+
+It seems that the $MSEP$ values are higher with `mixOmics` package.
+
+# Individual visualization 
+
+Now, it is possible to project the individuals on the best components determined before. We can notice that theses components choice differ strongly according to the use of $Q_2$ (1 or 2 components) or $MSEP$ (7 or 8 components). 
+
+```{r, echo = FALSE}
+plot.indiv <- function(object, compX = c(1,2), compY = NULL){
+  
+  class.obj <- class(object)
+  X <- object$X
+  Y <- object$Y
+  n <- nrow(X)
+  ncomp <- object$ncomp
+  mat.t <- as.data.frame(object$variates$X)
+
+  compX1 <- compX[1]
+  compX2 <- compX[2]
+  
+  # check arguments
+  if(is.na(compX2)){stop("'comp' must be a numeric vector of length 2.")}
+  if(compX1 < 1 || compX2 < 1){stop("compX and compY must be strictly positive.")}
+  if(compX1 > ncomp || compX2 > ncomp){stop("compX elements mustn't exceed ncomp.")}
+  
+  t1 <- mat.t[,compX1]
+  t2 <- mat.t[,compX2]
+  data <- data.frame(t1,t2)
+  t1.name <- paste("X-variate",compX1)
+  t2.name <- paste("X-variate",compX2)
+  colnames(data) <- c(t1.name,t2.name)
+  
+  # PLS/PLSda condition 
+  if(class.obj[3] == "plsda"){
+    colour <- Y
+    data$group <- Y
+  }else{
+    colour <- "black"
+    
+  }
+  
+  graphX <- ggplot(mat.t, aes(t1,t2, colour = colour)) + geom_point() + 
+    labs(title = "Individuals projected over latent variables", x = paste("X-variate",compX1), y = paste("X-variate ",compX2)) + 
+    geom_text(aes(label = 1:n), vjust = -1)
+  
+  # case of compY input and PLS
+  if(!is.null(compY) && class.obj[3] == "pls"){
+    
+    compY1 <- compY[1]
+    compY2 <- compY[2]
+    
+    #check arguments
+    if(is.na(compY2)){stop("'comp' must be a numeric vector of length 2.")}
+    if(compY1 < 1 || compY2 < 1){stop("compX and compY must be strictly positive.")}
+    if(compY1 > ncomp || compY2 > ncomp){stop("compY elements mustn't exceed ncomp.")}
+
+    mat.s <- as.data.frame(object$variates$Y)
+    s1 <- mat.t[,compY1]
+    s2 <- mat.t[,compY2]
+    
+    data <- data.frame(t1,t2,s1,s2)
+    s1.name <- paste("Y-variate",compY1)
+    s2.name <- paste("Y-variate",compY2)
+    colnames(data) <- c(t1.name,t2.name,s1.name,s2.name)
+    
+    graphY <- ggplot(mat.t, aes(s1,s2)) + geom_point() + 
+      labs(title = "Individuals projected over latent variables", x = paste("Y-variate",compY1), y = paste("Y-variate ",compY2)) + 
+      geom_text(aes(label = 1:n), vjust = -1)
+    
+    return(list(data = data, graphX = graphX, graphY = graphY))
+  }else{return(list(data = data, graphX = graphX))}
+  
+}
+```
+
+The following code lines allow to make two plots : one is the projection on the two first latent variables and the other is the projection on the two last.
+
+```{r}
+par(mfrow = c(1,2))
+plot.indiv()
+```
+

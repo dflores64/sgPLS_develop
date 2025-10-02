@@ -1,0 +1,11 @@
+---
+title: "sgPLS method"
+output: html_document
+date: "2025-08-29"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown

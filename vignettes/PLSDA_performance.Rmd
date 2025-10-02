@@ -1,0 +1,135 @@
+---
+title: "PLS-DA performance"
+output: html_document
+date: "2025-08-01"
+---
+
+# Introduction
+
+This page presents an application of the PLSDA performance assessment. The PLS method is a quite particular method : there are several predictions according to the number of components selected in the model. It is the same with PLSDA. The goal is almost to choose the best number of components in PLS regression in order to compute the best possible predictions. For that, we will use two datasets: 
+
+- one is a dataset with only ten predictor variables $X = (X1,X2,...,X10)$ and two classes.
+
+- the other is a dataset with a thousand of predictor variables $X = (X1,X2,...,X1000)$ and four classes. With $p = 1000 > n = 48$, this dataset approches realist conditions for PLS training.
+
+To access to predefined functions from sgPLSdevelop package and manipulate these datasets, run these lines :
+
+
+```{r data, message=FALSE, warning=FALSE}
+library(sgPLSdevelop)
+library(mixOmics)
+
+data1 <- data.cl.create(p = 10, classes = 3) 
+data("simuData")
+data2 <- simuData
+
+ncomp.max <- 8
+
+# First model
+X <- data1$X
+Y <- data1$Y
+model1 <- PLSda(X,Y, ncomp = ncomp.max)
+model1.mix <- mixOmics::plsda(X,Y,ncomp = ncomp.max)
+
+# Second model
+X <- data2$X
+Y <- data2$Y
+model2 <- PLSda(X,Y, ncomp = ncomp.max)
+model2.mix <- mixOmics::plsda(X,Y,ncomp = ncomp.max)
+```
+
+In the continuation of this article, we will show PLS-DA performance assessment with mean error rate by using leave-one-out cross-validation (LOOCV), 10-fold CV and 5-fold CV. The `perf.PLSda` function will allow to compute the error rate for each application case. 
+
+Remark : there are three possible distances for computing the error rate : $\textit{maximum}$ distance, $\textit{centroïds}$ distance and $\textit{Mahalanobis}$ distance. By default, this function uses $\textit{maximum}$ distance. In the most complicated cases, it is advisable to choose $\textit{Mahalanobis}$ distance which gives more accurate results.
+
+
+# First model 
+
+Let's start with the first model.
+
+## Leave-one-out CV
+
+The Leave-one-out CV (LOOCV) builts $n$ models with a test set composed of only a single row (never the same row for each model). 
+
+```{r, fig.cap= "Error rate of the first model by LOOCV"}
+perf.res1 <- perf.PLSda(model1, validation = "loo", progressBar = FALSE)
+h.best <- perf.res1$h.best
+```
+
+The `perf.PLSda` function gives us an optimal number of components equal to $H =$ `r h.best`, therefore we suggest to select `r h.best` component(s) in our first model.
+
+The LOOCV is an efficient way to assess performance but requires a large computing capacity. The K-fold CV (which create K blocks) reduces not only the number of models to built but also the execution time.
+
+## 10-fold CV
+
+The 10-fold CV builts 10 models. In our case, for each model, the test set is composed of $n/K = 40/10 = 4$ observations.
+
+```{r, fig.cap= "Error rate of the first model by 10-fold CV"}
+perf.res1 <- perf.PLSda(model1, folds = 10, progressBar = FALSE)
+h.best <- perf.res1$h.best
+```
+
+The `perf.PLSda` function gives us an optimal number of components equal to $H =$ `r h.best`.
+
+## 5-fold CV
+
+The 5-fold CV builts 5 models. In our case, for each model, the test set is composed of $n/K = 40/5 = 8$ observations.
+
+```{r, fig.cap= "Error rate of the first model by 5-fold CV"}
+perf.res1 <- perf.PLSda(model1, folds = 5, progressBar = FALSE)
+h.best <- perf.res1$h.best
+```
+
+The `perf.PLSda` function gives us an optimal number of components equal to $H =$ `r h.best`.
+
+## Population dispersion graph
+
+```{r}
+pop.model1 <- plot.indiv(model1, compX = c(h.best,h.best+1))
+pop.model1$graphX
+# "if h.best+1 > ncomp.max, replace by h.best-1"
+```
+
+
+# Second model
+
+Let's continue with the second model.
+
+## Leave-one-out CV
+
+```{r, fig.cap= "Error rate of the second model by LOOCV"}
+perf.res2 <- perf.PLSda(model2, validation = "loo", progressBar = FALSE)
+h.best <- perf.res2$h.best
+```
+
+The `perf.PLSda` function gives us an optimal number of components equal to $H =$ `r h.best`, therefore we suggest to select `r h.best` component(s) in our first model.
+
+## 12-fold CV
+
+For each model, the test set is composed of $n/K = 48/12 = 4$ observations.
+
+```{r, fig.cap= "Error rate of the second model by 10-fold CV"}
+perf.res2 <- perf.PLSda(model2, folds = 12, progressBar = FALSE)
+h.best <- perf.res2$h.best
+```
+
+The `perf.PLSda` function gives us an optimal number of components equal to $H =$ `r h.best`.
+
+## 6-fold CV
+
+For each model, the test set is composed of $n/K = 48/6 = 8$ observations.
+
+```{r, fig.cap= "Error rate of the second model by 5-fold CV"}
+perf.res2 <- perf.PLSda(model1, folds = 6, progressBar = FALSE)
+h.best <- perf.res2$h.best
+```
+
+The `perf.PLSda` function gives us an optimal number of components equal to $H =$ `r h.best`.
+
+## Population dispersion graph
+
+```{r}
+pop.model2 <- plot.indiv(model2, compX = c(h.best,h.best+1))
+pop.model2$graphX
+# "if h.best+1 > ncomp.max, replace by h.best-1"
+```

@@ -1,0 +1,12 @@
+\documentclass{article}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+La PLS est avant tout une méthode de réduction de dimension équivalente à l'ACP avec création de $H$ nouvelles composantes, mais en restant une méthode supervisée. La PLS peut être adaptée à la régression (on parlera alors de PLS1), à la classification (PLS-DA) mais peut aussi être multivariée (PLS2).
+
+
+On considère alors le jeu divisé en deux autres jeux de données centrés réduits $X$ et $Y$ de tailles $n \times p$ et $n \times q$ respectivement. Les $H$ nouvelles composantes créées sont notées $t_1$, $t_2$, ..., $t_H$ pour le jeu de données X et $u_1$, $u_2$, ..., $u_H$ pour le jeu de données $Y$. Elles sont une combinaison linéaire des variables $X_1$, ..., $X_p$ ainsi que des variables $Y_1$, ..., $Y_q$, respectivement.
+
+
+\end{document}
