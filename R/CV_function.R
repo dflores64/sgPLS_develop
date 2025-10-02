@@ -175,13 +175,3 @@ CV3 <- function(object,K,mode = "regression",ncomp){
   return(err/K/b)
 }
 
-
-d1 <- data.create()
-d2 <- data.cl.create(classes=3)
-n <- nrow(d1$X)
-CV(d2$X,d2$Y,mode = "class",ncomp = 10)
-CV2(d2$X,d2$Y,mode = "class",ncomp = 10,K=n)
-CV3(modele,mode = "class",ncomp = 10,K=n)
-
-CV2(d1$X,d1$Y,mode = "regression",ncomp = 10,K=5)
-CV3(modele,mode = "regression",ncomp = 10,K=n)
