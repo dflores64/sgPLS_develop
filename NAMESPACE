@@ -1,5 +1,6 @@
 import(ggplot2)
 import(pls)
+import(mixOmics)
 
 export(PLS,sPLS,gPLS,sgPLS,PLSda,sPLSda,gPLSda,sgPLSda,predict.PLS,predict.sPLS,predict.gPLS,predict.sgPLS,predict.PLSda,predict.sPLSda,predict.gPLSda,predict.sgPLSda,tuning.gPLS.X,tuning.sgPLS.X,tuning.sPLS.X,tuning.sPLS.XY,normv,
 soft.thresholding,soft.thresholding.group,soft.thresholding.sparse.group,lambda.quadra,plot.indiv,
@@ -26,6 +27,7 @@ S3method(perf, PLSda)
 S3method(perf, sPLSda)
 S3method(perf, gPLSda)
 S3method(perf, sgPLSda)
+
 
 
 
